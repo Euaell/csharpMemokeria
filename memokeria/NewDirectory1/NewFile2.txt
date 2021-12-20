@@ -1,0 +1,27 @@
+﻿ 
+            int value = 439;
+            if (value >= 256)
+            {
+                
+            }
+            string binary = Convert.ToString(value, 2);
+            
+            int count = 0;
+            int x = 0;
+            foreach (var VARIABLE in binary)
+            {
+                if (VARIABLE == '1')
+                {
+                    x += 1;
+                }
+                else
+                {
+                    if (x > count)
+                    {
+                        count = x;
+                    }
+                    x = 0;
+                }
+            }
+            
+            Console.WriteLine(count);

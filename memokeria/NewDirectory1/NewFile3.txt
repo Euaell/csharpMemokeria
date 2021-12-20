@@ -1,0 +1,30 @@
+﻿List<List<int>> arr = new List<List<int>>();
+            
+            // takes input
+            for (int i = 0; i < 6; i++)
+            {
+                arr.Add(Console.ReadLine().TrimEnd().Split(' ').ToList().Select(arrTemp => Convert.ToInt32(arrTemp)).ToList());
+            }
+            
+            // saves the sum of hour glass
+            List<int> sum = new List<int>(16);
+            for (int i = 0; i < 4; i++)
+            {
+                for (int j = 0; j < 4; j++)
+                {
+                    sum.Add(arr[i][j] + arr[i][j+1] + arr[i][j+2] + arr[i+2][j] + arr[i+2][j+1] + arr[i+2][j+2] + arr[i+1][j+1]);
+                }
+            }
+
+            // compare the max value of the sums
+            int max = sum[0];
+            foreach (var v in sum)
+            {
+                if (v > max)
+                {
+                    max = v;
+                }
+            }
+            
+            // print the max value
+            Console.WriteLine(max);

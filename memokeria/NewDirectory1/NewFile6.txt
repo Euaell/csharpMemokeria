@@ -1,0 +1,39 @@
+﻿abstract class Book
+    {
+        protected String title;
+        protected  String author;
+    
+        public Book(String t,String a){
+            title=t;
+            author=a;
+        }
+        public abstract void display();
+
+    }
+
+    class Difference {
+        private int[] elements;
+        public int maximumDifference;
+
+        // Add your code here
+        public Difference(int[] e)
+        {
+            this.elements = e;
+            maximumDifference = 0;
+        }
+
+        public void computeDifference()
+        {
+            for (int i = 0; i < elements.Length; i++)
+            {
+                for (int j = i + 1; j < elements.Length; j++)
+                {
+                    int v = Math.Abs(this.elements[i] - this.elements[j]);
+                    if (v > this.maximumDifference)
+                    {
+                        maximumDifference = v;
+                    }
+                }
+            }
+        }
+    }

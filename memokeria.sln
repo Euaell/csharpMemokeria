@@ -1,0 +1,16 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "memokeria", "memokeria\memokeria.csproj", "{0C92F087-96CF-4572-9BF8-3F1A38B0FB73}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{0C92F087-96CF-4572-9BF8-3F1A38B0FB73}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{0C92F087-96CF-4572-9BF8-3F1A38B0FB73}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{0C92F087-96CF-4572-9BF8-3F1A38B0FB73}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{0C92F087-96CF-4572-9BF8-3F1A38B0FB73}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+EndGlobal

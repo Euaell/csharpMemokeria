@@ -1,0 +1,36 @@
+﻿[Serializable]
+    public class InvalidArgumentException : Exception
+    {
+        public InvalidArgumentException() : base()
+        {
+        }
+
+        public InvalidArgumentException(string message) : base(message)
+        {
+        }
+    }
+
+    class Calculator
+    {
+        public int power(int x, int y)
+        {
+            if (x < 0 || y  < 0)
+            {
+                throw new InvalidArgumentException("n and p should be non-negative");
+            }
+            return (int)Math.Round(Math.Pow(x, y));
+        }
+    }
+    
+    //main
+    Calculator myCalculator=new  Calculator();
+                int n=Int32.Parse(Console.ReadLine());
+                int p=Int32.Parse(Console.ReadLine());
+                try{
+                    int ans=myCalculator.power(n,p);
+                    Console.WriteLine(ans);
+                }
+                catch(Exception e){
+                    Console.WriteLine(e.Message);
+    
+                }

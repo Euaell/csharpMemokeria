@@ -1,0 +1,13 @@
+﻿string S = Console.ReadLine();
+            while (S != "q")
+            {
+                try
+                {
+                    int x = int.Parse(S, NumberStyles.AllowLeadingWhite | NumberStyles.AllowTrailingWhite | NumberStyles.AllowLeadingSign | NumberStyles.AllowThousands);
+                    Console.WriteLine(x);
+                }catch(FormatException){
+                    Console.WriteLine("Bad String");
+                }
+
+                S = Console.ReadLine();
+            }

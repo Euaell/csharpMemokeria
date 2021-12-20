@@ -1,0 +1,7 @@
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\bin\Debug\memokeria.exe
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\bin\Debug\memokeria.pdb
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\obj\Debug\memokeria.csproj.AssemblyReference.cache
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\obj\Debug\memokeria.csproj.SuggestedBindingRedirects.cache
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\obj\Debug\memokeria.csproj.CoreCompileInputs.cache
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\obj\Debug\memokeria.exe
+E:\Coursera\Intro to C# programming with Unity\memokeria\memokeria\obj\Debug\memokeria.pdb
