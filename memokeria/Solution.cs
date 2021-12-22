@@ -1,11 +1,12 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace memokeria
 {
     class Solution {
-        public void printColl<T>(List<T> x)
+        public static void printColl<T>(List<T> x)
         {
             foreach (var Va in x)
             {
@@ -165,7 +166,7 @@ namespace memokeria
             return sum;
         }
         
-        public int pickingNumbers(List<int> a)
+        public int PickingNumbers(List<int> a)
         {
             int max = 0;
             int counter = 0;
@@ -196,5 +197,46 @@ namespace memokeria
             return points;
         }
         
+        public static List<int> ClimbingLeaderboard(List<int> ranked, List<int> player) // Time Limit exceeded
+        {
+            List<int> returnRank = new List<int>();
+            List<int> prevRank = new List<int>();
+            prevRank.Add(1);
+            int rankCounter = 1;
+            for (int i = 1; i < ranked.Count; i++)
+            {
+                if(ranked[i] == ranked[i - 1])
+                    prevRank.Add(rankCounter);
+                else
+                    prevRank.Add(++rankCounter);
+            }
+            int playerCount = player.Count;
+            // to make the loop faster, used a reversed for loop
+            for (var index = player.Count - 1; index >= 0; index--)
+            {
+                var VARIABLE = player[index];
+                for (int i = 0; i < ranked.Count; i++)
+                    if (VARIABLE >= ranked[i])
+                    {
+                        returnRank.Add(prevRank[i]);
+                        playerCount--;
+                        break;
+                    }
+            }
+
+            while (playerCount > 0)
+            {
+                int itemp = player.Count - playerCount;
+                if (player[itemp] == player[itemp - 1])
+                    returnRank.Add(rankCounter);
+                else 
+                    returnRank.Add(++rankCounter);
+                playerCount--;
+            }
+
+            returnRank.Reverse();
+            printColl(returnRank);
+            return returnRank;
+        }
     }
 }
