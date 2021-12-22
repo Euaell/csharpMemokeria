@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Numerics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
@@ -14,10 +15,13 @@ namespace memokeria
             // // bav.StrLine();
             // bav.DisplayGrid();
 
-
             Solution a = new Solution();
-            int[] arr = new[] {5, 4, -1, 7, 8};
-            Console.WriteLine(a.MaxSubArray(arr));
+            // int[] arr = new[] {5, 4, -1, 7, 8};
+            // Console.WriteLine(a.MaxSubArray(arr));
+            int[] arr1 = new[] {3, 2, 1};
+            int[] arr2 = new[] {1, 2, 3};
+            a.printColl(a.compareTriplets(arr1.ToList(), arr2.ToList()));
+            
 
         }
     }

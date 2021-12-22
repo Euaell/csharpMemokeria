@@ -5,6 +5,14 @@ using System.Linq;
 namespace memokeria
 {
     class Solution {
+        public void printColl<T>(List<T> x)
+        {
+            foreach (var Va in x)
+            {
+                Console.Write($" {Va} ");
+            }
+            Console.WriteLine(" ");
+        }
         public string DecodeString(string s) // works
         {
             string x = "";
@@ -155,6 +163,37 @@ namespace memokeria
             
 
             return sum;
+        }
+        
+        public int pickingNumbers(List<int> a)
+        {
+            int max = 0;
+            int counter = 0;
+            for (int i = 0; i < a.Count; i++)
+            {
+                for (int j = 0; j < a.Count; j++)
+                    if (a[j] == a[i] - 1 || a[j] == a[i])
+                        counter++;
+
+                max = counter > max ? counter : max;
+                // Console.WriteLine($"counter for {a[i]} is {counter}");
+                counter = 0;
+            }
+            return max;
+        }
+        
+        public List<int> compareTriplets(List<int> a, List<int> b)
+        {
+            List<int> points = new List<int>();
+            points.Add(0);
+            points.Add(0);
+            for(int i = 0; i < a.Count; i++){
+                if (a[i] > b[i])
+                    points[0]++;
+                else if (b[i] > a[i])
+                    points[1]++;
+            }
+            return points;
         }
         
     }
