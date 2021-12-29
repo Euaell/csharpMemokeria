@@ -30,9 +30,7 @@ namespace memokeria
             // Solution.printColl(a.compareTriplets(arr1.ToList(), arr2.ToList()));
             
             // Solution.ClimbingLeaderboard(arr1.ToList(), arr2.ToList());
-            var x =Solution.countingSort(arr3.ToList());
-            foreach (var va in x)
-                Console.Write($" {va} ");
+            
         }
     }
 }

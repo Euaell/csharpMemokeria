@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace memokeria
@@ -370,12 +371,268 @@ namespace memokeria
             // int[] freq = new int[max + 1];
             foreach (var t in arr)
                 freq[t] += 1;
-            // var ret = new List<int>();// returns the sorrtrr
+            // var ret = new List<int>();// returns the sorted List
             // for (int i = 0; i < freq.Length; i++)
             //     for (int j = 0; j < freq[i]; j++)
             //             ret.Add(i);
 
             return freq;
         }
+        
+        public string SortSentence(string s) // works but is slow
+        {
+            List<string> temp = s.Split(' ').ToList();
+            SortedDictionary<int, string> temp2 = new SortedDictionary<int, string>();
+            foreach (var va in temp)
+            {
+                int x;
+                Int32.TryParse(va.Last().ToString(), out x);
+                temp2.Add(x, va.Remove(va.Length - 1));
+            }
+            var y = temp2.Values.ToList();
+            
+            return String.Join(" ", y);
+        }
+        
+        public int[] SmallerNumbersThanCurrent(int[] nums)
+        {
+            int[] x = new int[nums.Length];
+            for (int i = 0; i < nums.Length; i++)
+            {
+                for (int j = 0; j < nums.Length; j++)
+                    if (nums[j] < nums[i] && i != j)
+                        x[i]++;
+            }
+
+            return x;
+        }
+        
+        public IList<int> TargetIndices(int[] nums, int target)// work really fast with bad memory usage
+        {
+            int max = nums.Max();
+            List<int> freq = new List<int>();
+            for (int i = 0; i < max + 1; i++)
+                freq.Add(0);
+            foreach (var t in nums)
+                freq[t] += 1;
+            var ret = new List<int>();// returns the sorted array
+            for (int i = 0; i < freq.Count; i++)
+                for (int j = 0; j < freq[i]; j++)
+                        ret.Add(i);
+            
+            var ret1 = new List<int>();
+            for (int i = 0; i < ret.Count; i++)
+                if (ret[i] == target)
+                    ret1.Add(i);
+            
+            return ret1;
+        }
+        
+        public int[] SearchRange(int[] nums, int target) // works well
+        {
+            int[] x = new[] {-1, -1};
+            int count = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] == target && count == 0)
+                {
+                    x[0] = i;
+                    x[1] = i;
+                    count++;
+                }
+                else if (nums[i] != target && count > 0)
+                {
+                    x[1] = i - 1;
+                    break;
+                }
+                else if (nums[i] == target && i == nums.Length -1)
+                {
+                    if (count == 0)
+                    {
+                        x[0] = i;
+                        x[1] = i;
+                    }
+                    else
+                        x[1] = i;
+                }
+            }
+
+            return x;
+        }
+        
+        public void SortColors(int[] nums) // works well
+        {
+            int[] freq = new[] {0, 0, 0};
+            foreach (var va in nums)
+                freq[va]++;
+
+            for (int i = 0, j = 0; i < nums.Length; i++)
+            {
+                if (freq[j] > 0)
+                    nums[i] = j;
+                else
+                {
+                    j++;
+                    i--;
+                }
+            }
+            
+        }
+        
+        public int[][] KClosest(int[][] points, int k)
+        {
+            List<int[]> x = points.ToList();
+            int[][] ret = new int[k][];
+            for (int i = 0; i < points.Length; i++)
+            {
+                double pDis = Math.Pow(points[i][0], 2) + Math.Pow(points[i][1], 2);
+                for (int j = i + 1; j < points.Length; j++)
+                {
+                    double sDis = Math.Pow(points[j][0], 2) + Math.Pow(points[j][1], 2);
+                    if (pDis > sDis)
+                    {
+                        (points[i], points[j]) = (points[j], points[i]);
+                        // int[] temp = points[i];
+                        // points[i] = points[j];
+                        // points[j] = temp;
+                        break;
+                    }
+                }
+            }
+
+            for (int i = 0; i < ret.Length; i++)
+                ret[i] = points[i];
+            
+
+            return ret;
+        }
+        
+        public int MostWordsFound(string[] sentences) // very easy
+        {
+            List<string> temp = sentences[0].Split(' ').ToList();
+            int max = temp.Count;
+            for (int i = 1; i < sentences.Length; i++)
+            {
+                temp = sentences[i].Split(' ').ToList();
+                max = temp.Count > max ? temp.Count : max;
+            }
+
+            return max;
+        }
+
+        public bool cusChecker(int[] arr, int start, int end) // companion function for the next one
+        {
+            List<int> temp = new List<int>();
+            for (int i = start; i < end; i++)
+                temp.Add(arr[i]);
+            temp.Sort();
+            int dif = temp[1] - temp[0];
+            for (int i = 2; i < temp.Count; i++)
+                if (temp[i] - temp[i -1] != dif)
+                    return false;
+            return true;
+        }
+        public IList<bool> CheckArithmeticSubarrays(int[] nums, int[] l, int[] r) // works well
+        {
+            List<bool> ret = new List<bool>();
+            for (int i = 0; i < l.Length; i++)
+            {
+                bool x = cusChecker(nums, l[i], r[i]);
+                ret[i] = x;
+            }
+
+            return ret;
+        }
+        
+        public int NumIdenticalPairs(int[] nums) // works well
+        {
+            int goodPairs = 0;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                for (int j = i + 1; j < nums.Length; j++)
+                    if (nums[j] == nums[i])
+                        goodPairs++;
+            }
+            return goodPairs;
+        }
+        
+        public int ShortestSubarray(int[] nums, int k)
+        {
+            int st = k;
+            int currCounter = -1;
+            int newCounter = -1;
+            for (int i = 0; i < nums.Length; i++)
+            {
+                for (int j = i; j < nums.Length; j++)
+                {
+                    st -= nums[j];
+                    newCounter++;
+                    if (st == 0 )
+                        break;
+                }
+
+                if (st == 0)
+                {
+                    currCounter = newCounter < currCounter ? newCounter + 1 : currCounter;
+                    continue;
+                }
+                st = k;
+                currCounter = newCounter;
+                
+                newCounter = -1;
+            }
+
+            return currCounter;
+        }
+
+        public static int diagonalDifference(List<List<int>> arr) // easyly works
+        {
+            int sumR = 0;
+            for (int i = 0; i < arr.Count; i++)
+                sumR += arr[i][i];
+            int sumL = 0;
+            for (int i = arr.Count - 1; i >= 0; i--)
+                sumL += arr[i - arr.Count + 1][i];
+            
+            return sumL + sumR;
+        }
+        
+        public static void plusMinus(List<int> arr) // works
+        {
+            int negative = 0;
+            int positive = 0;
+            int zero = 0;
+            foreach (var va in arr)
+            {
+                if (va < 0)
+                    negative++;
+                else if (va > 0)
+                    positive++;
+                else
+                    zero++;
+            }
+
+            double neg = (double)negative / arr.Count;
+            Console.WriteLine(neg.ToString("F6"));
+            decimal pos = positive / arr.Count;
+            Console.WriteLine(pos.ToString("F6"));
+            decimal zer = zero / arr.Count;
+            Console.WriteLine(zer.ToString("F6"));
+        }
+        
+        public static void staircase(int n) // solved
+        {
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                    Console.Write(j >= n - i - 1 ? "#" : " ");
+                Console.WriteLine();
+            }
+        }
+        
+        
+        
+        
+        
     }
 }
