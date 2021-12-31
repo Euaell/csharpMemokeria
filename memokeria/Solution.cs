@@ -160,11 +160,18 @@ namespace memokeria
             }
         }
 
-        public int MaxSubArray(int[] nums) // bungled but work in progress
+        public int MaxSubArray(int[] nums) // Kadane's Algorithm
         {
             int sum = 0;
-
-            
+            int curSum = 0;
+            foreach (var va in nums)
+            {
+                curSum += va;
+                if (curSum > sum)
+                    sum = curSum;
+                if (curSum < 0)
+                    curSum = 0;
+            }
 
             return sum;
         }
@@ -614,9 +621,9 @@ namespace memokeria
 
             double neg = (double)negative / arr.Count;
             Console.WriteLine(neg.ToString("F6"));
-            decimal pos = positive / arr.Count;
+            double pos = (double)positive / arr.Count;
             Console.WriteLine(pos.ToString("F6"));
-            decimal zer = zero / arr.Count;
+            double zer = (double)zero / arr.Count;
             Console.WriteLine(zer.ToString("F6"));
         }
         
@@ -630,7 +637,31 @@ namespace memokeria
             }
         }
         
+        // given an array of 5 integers calculate the min and max sum of any four elements
+        public static void miniMaxSum(List<int> arr) // works
+        {
+            arr.Sort();
+            ulong min = 0;
+            ulong max = 0;
+            for (int i = 0; i < arr.Count - 1; i++)
+                min += (ulong)arr[i];
+            for (int i = 1; i < arr.Count; i++)
+                max += (ulong)arr[i];
+            Console.WriteLine($"{min} {max}");
+        }
         
+        public static string timeConversion(string s) // works
+        {
+            string ds = s.Substring(8);
+            string tm = s.Substring(0, 8);
+            List<int> tim = tm.Split(':').ToList().Select(arrTemp => Convert.ToInt32(arrTemp)).ToList();
+            tim[0] = tim[0] % 12;
+            string mm = tim[1].ToString("D2");
+            string ss = tim[2].ToString("D2");
+            string hh = ds == "PM" ? (tim[0] + 12).ToString("D2") : tim[0].ToString("D2");
+            
+            return $"{hh}:{mm}:{ss}";
+        }
         
         
         

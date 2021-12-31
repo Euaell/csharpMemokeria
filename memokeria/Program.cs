@@ -27,6 +27,7 @@ namespace memokeria
             int[] arr1 = new[] {100, 90, 90, 80, 75, 60};
             int[] arr2 = new[] {50, 65, 77, 90, 102};
             int[] arr3 = new[] {5, 1, 2, 2, 3, 4, 5};
+            Solution.PrintColl(arr3.ToList());
             // Solution.printColl(a.compareTriplets(arr1.ToList(), arr2.ToList()));
             
             // Solution.ClimbingLeaderboard(arr1.ToList(), arr2.ToList());
