@@ -21,17 +21,30 @@ namespace memokeria
 
             // List<int> player = Console.ReadLine().TrimEnd().Split(' ').ToList().Select(playerTemp => Convert.ToInt32(playerTemp)).ToList();
             
-            // Solution a = new Solution();
+            Solution a = new Solution();
             // int[] arr = new[] {5, 4, -1, 7, 8};
             // Console.WriteLine(a.MaxSubArray(arr));
             int[] arr1 = new[] {100, 90, 90, 80, 75, 60};
             int[] arr2 = new[] {50, 65, 77, 90, 102};
             int[] arr3 = new[] {5, 1, 2, 2, 3, 4, 5};
-            Solution.PrintColl(arr3.ToList());
+            // Solution.PrintColl(arr3.ToList());
             // Solution.printColl(a.compareTriplets(arr1.ToList(), arr2.ToList()));
             
             // Solution.ClimbingLeaderboard(arr1.ToList(), arr2.ToList());
-            
+
+            Solution.ListNode b = new Solution.ListNode(arr1[0], null);
+            var temp = b;
+            for (int i = 1; i < arr1.Length; i++)
+            {
+                temp.next = new Solution.ListNode(arr1[i], null);
+                temp = temp.next;
+            }
+
+            while (b != null)
+            {
+                Console.Write($" {b.val}");
+                b = b.next;
+            }
         }
     }
 }

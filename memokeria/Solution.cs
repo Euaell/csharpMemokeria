@@ -662,6 +662,182 @@ namespace memokeria
             
             return $"{hh}:{mm}:{ss}";
         }
+
+        public class ListNode // companion class for the below function
+        {
+            public int val;
+            public ListNode next;
+            
+            public ListNode(int val=0, ListNode next=null) {
+                this.val = val;
+                this.next = next;
+            }
+        }
+        public ListNode AddTwoNumbers(ListNode l1, ListNode l2) // ACCEPTED
+        {
+            List<int> first = new List<int>();
+            while (l1 != null)
+            {
+                first.Add(l1.val);
+                l1 = l1.next;
+            }
+
+            List<int> second = new List<int>();
+            while (l2 != null)
+            {
+                second.Add(l2.val);
+                l2 = l2.next;
+            }
+
+            List<int> sum = new List<int>();
+            int carry = 0;
+            for (int i = 0; i < first.Count || i < second.Count; i++)
+            {
+                if (i >= first.Count || i >= second.Count)
+                {
+                    if (i >= first.Count) // if the first list has ended
+                    {
+                        var su = second[i] + carry;
+                        carry = su >= 10 ? 1 : 0;
+                        su = carry == 1 ? su - 10 : su;
+                        sum.Add(su);
+                    }
+                    else // if the second end has ended before the first
+                    {
+                        var su = first[i] + carry;
+                        carry = su >= 10 ? 1 : 0;
+                        su = carry == 1 ? su - 10 : su;
+                        sum.Add(su);
+                    }
+                }
+                else
+                {
+                    var su = first[i] + second[i] + carry;
+                    carry = su >= 10 ? 1 : 0;
+                    su = carry == 1 ? su - 10 : su;
+                    sum.Add(su);
+                }
+            }
+
+            if (carry == 1)
+                sum.Add(1);
+            ListNode temp = new ListNode(sum[0], null);
+            ListNode ret = temp;
+            for (int i = 1; i < sum.Count; i++)
+            {
+                temp.next = new ListNode(sum[i], null);
+                temp = temp.next;
+            }
+            
+            return ret;
+        }
+        public ListNode impAddTwoNumbers(ListNode l1, ListNode l2) // faster version of the above code
+        {
+            ListNode ret = null;
+            ListNode currNode = null;
+            int carry = 0;
+            
+            while (l1 != null || l2 != null)
+            {
+                int one = l1?.val ?? 0;
+                int two = l2?.val ?? 0;
+                // int one = l1 == null ? 0 : l1.val; // longer version of the above 2 lines of code
+                // int two = l2 == null ? 0 : l2.val;
+                int sum = one + two + carry;
+
+                carry = sum / 10;
+                sum %= 10;
+                var temp = new ListNode(sum, null);
+                
+                if (ret == null)
+                {
+                    currNode = temp;
+                    ret = temp;
+                }
+                else
+                {
+                    currNode.next = temp;
+                    currNode = temp;
+                }
+                
+                l1 = l1?.next;
+                l2 = l2?.next;
+                // if (l1 != null) // longer version of the 2 line code above
+                //     l1 = l1.next;
+                // if (l2 != null)
+                //     l2 = l2.next;
+            }
+            if (carry == 1 && currNode != null) 
+                currNode.next = new ListNode(1);
+            
+            return ret;
+        }
+        
+        public ListNode AddTwoNumbersTwo(ListNode l1, ListNode l2) // accepted
+        {
+            List<int> first = new List<int>();
+            while (l1 != null)
+            {
+                first.Add(l1.val);
+                l1 = l1.next;
+            }
+
+            first.Reverse();
+            
+            List<int> second = new List<int>();
+            while (l2 != null)
+            {
+                second.Add(l2.val);
+                l2 = l2.next;
+            }
+
+            second.Reverse();
+
+            List<int> sum = new List<int>();
+            int carry = 0;
+            for (int i = 0; i < first.Count || i < second.Count; i++)
+            {
+                if (i >= first.Count || i >= second.Count)
+                {
+                    if (i >= first.Count) // if the first list has ended
+                    {
+                        var su = second[i] + carry;
+                        carry = su >= 10 ? 1 : 0;
+                        su = carry == 1 ? su - 10 : su;
+                        sum.Add(su);
+                    }
+                    else // if the second end has ended before the first
+                    {
+                        var su = first[i] + carry;
+                        carry = su >= 10 ? 1 : 0;
+                        su = carry == 1 ? su - 10 : su;
+                        sum.Add(su);
+                    }
+                }
+                else
+                {
+                    var su = first[i] + second[i] + carry;
+                    carry = su >= 10 ? 1 : 0;
+                    su = carry == 1 ? su - 10 : su;
+                    sum.Add(su);
+                }
+            }
+
+            if (carry == 1)
+                sum.Add(1);
+            sum.Reverse();
+            ListNode temp = new ListNode(sum[0], null);
+            ListNode ret = temp;
+            for (int i = 1; i < sum.Count; i++)
+            {
+                temp.next = new ListNode(sum[i], null);
+                temp = temp.next;
+            }
+            
+            return ret;
+        }
+        
+        
         
         
         
