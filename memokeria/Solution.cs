@@ -370,18 +370,12 @@ namespace memokeria
         
         public static List<int> countingSort(List<int> arr) // works well: save for further improvement
         {
-            int max = arr.Max();
-            List<int> freq = new List<int>();
-            for (int i = 0; i < max + 1; i++)
+            List<int> freq = new List<int>(100);
+            for (int i = 0; i < 100; i++)
                 freq.Add(0);
             
-            // int[] freq = new int[max + 1];
             foreach (var t in arr)
                 freq[t] += 1;
-            // var ret = new List<int>();// returns the sorted List
-            // for (int i = 0; i < freq.Length; i++)
-            //     for (int j = 0; j < freq[i]; j++)
-            //             ret.Add(i);
 
             return freq;
         }
@@ -599,9 +593,9 @@ namespace memokeria
                 sumR += arr[i][i];
             int sumL = 0;
             for (int i = arr.Count - 1; i >= 0; i--)
-                sumL += arr[i - arr.Count + 1][i];
+                sumL += arr[(arr.Count - 1) - i][i];
             
-            return sumL + sumR;
+            return Math.Abs(sumR - sumL);
         }
         
         public static void plusMinus(List<int> arr) // works
@@ -731,7 +725,7 @@ namespace memokeria
             
             return ret;
         }
-        public ListNode impAddTwoNumbers(ListNode l1, ListNode l2) // faster version of the above code
+        public ListNode improvedAddTwoNumbers(ListNode l1, ListNode l2) // faster version of the above code
         {
             ListNode ret = null;
             ListNode currNode = null;
@@ -772,7 +766,6 @@ namespace memokeria
             
             return ret;
         }
-        
         public ListNode AddTwoNumbersTwo(ListNode l1, ListNode l2) // accepted
         {
             List<int> first = new List<int>();
@@ -837,9 +830,72 @@ namespace memokeria
             return ret;
         }
         
+        public int RemoveDuplicates(int[] nums) // works
+        {
+            int j = 0;
+            for (int i = 1; i < nums.Length && j < nums.Length - 1; i++)
+            {
+                if (nums[i] != nums[i - 1])
+                    nums[++j] = nums[i];
+            }
+
+            int ret = nums.Length > 0 ? ++j : 0;
+            for (; j < nums.Length; j++)
+                nums[j] = -101;
+
+            return ret;
+        }
         
+        public int RemoveDuplicatesTwo(int[] nums) {
+            int j = 0;
+            int counter = 0;
+            for (int i = 1; i < nums.Length && j < nums.Length - 1; i++)
+            {
+                if (nums[i] == nums[i - 1] && counter < 2)
+                {
+                    nums[++j] = nums[i];
+                    counter++;
+                }
+                else if (nums[i] == nums[i - 1] && counter > 2)
+                    continue;
+                else
+                {
+                    counter = 0;
+                    nums[++j] = nums[i];
+                }
+            }
+
+            int ret = nums.Length > 0 ? ++j : 0;
+            for (; j < nums.Length; j++)
+                nums[j] = -101;
+
+            return ret;
+        }
         
+        public static int lonelyinteger(List<int> a) // works
+        {
+            var temp1 = new Dictionary<int, int>();
+            foreach (var va in a)
+            {
+                if (temp1.ContainsKey(va))
+                    temp1[va]++;
+                else
+                    temp1.Add(va, 1);
+            }
+            return (from va in temp1 where va.Value == 1 select va.Key).FirstOrDefault();
+        }
         
+        public static int findMedian(List<int> arr)
+        {
+            arr.Sort();
+            return arr[arr.Count / 2];
+        }
+        
+        public static int flippingMatrix(List<List<int>> matrix) // don't know how to do it ???
+        {
+            
+            return 0;
+        }
         
     }
 }
