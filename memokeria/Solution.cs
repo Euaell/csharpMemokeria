@@ -945,14 +945,44 @@ namespace memokeria
 
             return xdig[xdig.Capacity - k];
         }
-        
-        public int LeastInterval(char[] tasks, int n)
+
+        public int MinSetSize(int[] arr)
         {
-            var freq = new List<int>(26);
-            foreach (var c in tasks)
-                freq[c - 65] += 1; // Capital Letter starts at 65 in ASCII
+            var temp = new List<int>(arr.Max() + 1);
+            Console.WriteLine(arr.Length);
+            for (int i = 0; i <= arr.Max(); i++)
+                temp.Add(0);
+            foreach (var v in arr)
+                temp[v]++;
+
+            int size = arr.Length;
+            int half = size / 2;
+            int ret = 0;
+            temp.Sort();
+            while (size > half)
+            {
+                size -= temp.Last();
+                // size -= temp.Max();
+                temp.RemoveAt(temp.Count - 1);
+                // temp.Remove(temp.Max());
+                ret++;
+            }
+
+            return ret;
+        }
+        
+        public int Fib(int n)
+        {
             
-            
+            switch (n)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    return 1;
+                default:
+                    return Fib(n - 1) + Fib(n - 2);
+            }
         }
     }
 }
