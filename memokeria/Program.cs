@@ -27,11 +27,18 @@ namespace memokeria
             int[] arr1 = new[] {100, 90, 90, 80, 75, 60};
             int[] arr2 = new[] {50, 65, 77, 90, 102};
             int[] arr3 = new[] {5, 1, 2, 2, 3, 4, 5};
+            string[] arr4 = new[] {"1", "2", "12", "21"};
             Solution.PrintColl(arr3.ToList());
             // Solution.printColl(a.compareTriplets(arr1.ToList(), arr2.ToList()));
-            
+           
+            //Console.Write( a.KthLargestNumber(arr4, 2));
             // Solution.ClimbingLeaderboard(arr1.ToList(), arr2.ToList());
             
+            for (var i = 0; i < 255; i++)
+            {
+                Console.WriteLine(i + ") " + (char) i);
+            }
+
         }
     }
 }

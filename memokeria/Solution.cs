@@ -897,5 +897,62 @@ namespace memokeria
             return 0;
         }
         
+        public IList<string> FizzBuzz(int n)
+        {
+            var ret = new List<string>();
+            for (var i = 1; i <= n; i++)
+            {
+                if (i % 3 == 0 && i % 5 == 0)
+                    ret.Add("FizzBuzz");
+                else if (i % 3 == 0)
+                    ret.Add("Fizz");
+                else if (i % 5 == 0)
+                    ret.Add("Buzz");
+                else
+                    ret.Add(i.ToString());
+            }
+
+            return ret;
+        }
+        
+        public string KthLargestNumber(string[] nums, int k)
+        {
+            List<int> x = new List<int>(); // stores digit number from 1 to 100
+            foreach (var v in nums)
+                x[nums.Length] += 1;
+
+            int tempK = k;
+            x.Reverse();
+            int dig = 0;
+            for (int i = x.Count - 1; i >= 0; i--)
+            {
+                tempK -= x[i];
+                if (tempK <= 0)
+                {
+                    dig = i;
+                }
+            }
+            for (var i = 0; i < 100; i++)
+            {
+                k -= x[i];
+                if (k <= 0)
+                    dig = 100 - i;
+            }
+
+            var xdig = new List<string>(100 - dig);
+            xdig.AddRange(nums.Where(vNum => vNum.Length == dig));
+            xdig.Sort();
+
+            return xdig[xdig.Capacity - k];
+        }
+        
+        public int LeastInterval(char[] tasks, int n)
+        {
+            var freq = new List<int>(26);
+            foreach (var c in tasks)
+                freq[c - 65] += 1; // Capital Letter starts at 65 in ASCII
+            
+            
+        }
     }
 }
