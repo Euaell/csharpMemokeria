@@ -11,9 +11,8 @@ namespace memokeria
         public static void PrintColl<T>(List<T> x) // prints any collections
         {
             foreach (var va in x)
-            {
                 Console.Write($" {va} ");
-            }
+            
             Console.WriteLine(" ");
         }
         
@@ -44,7 +43,7 @@ namespace memokeria
 
                         pass++;
                     }
-                    string temp = String.Concat(Enumerable.Repeat(DecodeString(s.Substring(i, pass)), Int32.Parse(inp)));
+                    string temp = String.Concat(Enumerable.Repeat(DecodeString(s.Substring(i, pass)), int.Parse(inp)));
                     i += pass;
                     x = x.Insert(x.Length, temp);
                 } 
@@ -948,30 +947,27 @@ namespace memokeria
 
         public int MinSetSize(int[] arr)
         {
-            var temp = new List<int>(arr.Max() + 1);
-            Console.WriteLine(arr.Length);
-            for (int i = 0; i <= arr.Max(); i++)
-                temp.Add(0);
-            foreach (var v in arr)
-                temp[v]++;
-
-            int size = arr.Length;
-            int half = size / 2;
-            int ret = 0;
-            temp.Sort();
-            while (size > half)
+            var freq = new Dictionary<int, int>(arr.Max());
+            foreach (var va in arr)
             {
-                size -= temp.Last();
-                // size -= temp.Max();
-                temp.RemoveAt(temp.Count - 1);
-                // temp.Remove(temp.Max());
-                ret++;
+                if (freq.ContainsKey(va))
+                    freq[va]++;
+                else
+                    freq.Add(va, 1);
             }
-
+                
+            int ret = 0;
+            while (ret < arr.Length)
+            {
+                int max = freq.Values.Max();
+                int key = freq.Max(kvp => kvp.Key);
+                ret += 1;
+                freq.Remove(key);
+            }
             return ret;
         }
         
-        public int Fib(int n)
+        public int Fib(int n) // works (slow, use array to store calculated results)
         {
             
             switch (n)
@@ -984,5 +980,38 @@ namespace memokeria
                     return Fib(n - 1) + Fib(n - 2);
             }
         }
+        
+        public bool PredictTheWinner(int[] nums)
+        {
+            var dp = new Dictionary<int[], int>();
+            int Rec(int sINd, int eInd)
+            {
+                if (!dp.ContainsKey(new[] {sINd + 1, eInd}))
+                    dp.Add(new []{sINd + 1, eInd},Rec(sINd + 1, eInd));
+                if (!dp.ContainsKey(new[] {sINd, eInd - 1}))
+                    dp.Add(new []{sINd, eInd - 1},Rec(sINd, eInd - 1));
+                
+                // return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+                return sINd > eInd
+                    ? 0
+                    : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+            }
+
+            return Rec(0, nums.Length - 1) >= 0;
+            
+        }
+        
     }
 }
+// var dp = new Dictionary<int[], int>();
+// int Rec(int sINd, int eInd)
+// {
+//     if (!dp.ContainsKey(new[] {sINd + 1, eInd}))
+//         dp.Add(new []{sINd + 1, eInd},Rec(sINd + 1, eInd));
+//     if (!dp.ContainsKey(new[] {sINd, eInd - 1}))
+//         dp.Add(new []{sINd, eInd - 1},Rec(sINd, eInd - 1));
+//                 
+//     return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+// }
+//
+// return Rec(0, nums.Length - 1) >= 0;
