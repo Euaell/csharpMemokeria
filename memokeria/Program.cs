@@ -20,6 +20,78 @@ namespace memokeria
     
     internal class Program
     {
+        public ListNode[] SplitListToParts(ListNode head, int k) // works
+        {
+            ListNode slow = head;
+            int size = 0;
+            while (slow != null){
+                size++;
+                slow = slow.next;
+            }
+
+            ListNode [] ret = new ListNode[k];
+            slow = head;
+
+            for (int i = 0; i < k; i++)
+            {
+                ListNode prev = slow;
+                ret[i] = slow;
+                for (int j = 0; j < size / k + (i >= size % k ? 0 : 1); j++)
+                {
+                    prev = slow;
+                    slow = slow?.next;
+                }
+                if (prev != null) prev.next = null;
+            }
+            return ret;
+        }
+        
+        public ListNode OddEvenList(ListNode head) // works
+        {
+            if (head == null)
+                return null;
+            ListNode odd = head;
+            ListNode even = head.next;
+        
+            ListNode evenHead = even;
+        
+            while (even?.next != null){
+                odd.next = even.next;
+                odd = odd.next;
+            
+                even.next = odd.next;
+                even = even.next;
+            }
+        
+            odd.next = evenHead;
+            return head;
+        }
+        
+        public ListNode RemoveElements(ListNode head, int val) // works
+        {
+            ListNode temp = head;
+            ListNode prev = null;
+        
+            while(temp != null && head != null){
+                // Console.WriteLine(temp.val);
+                if (temp.val == val){
+                    if (prev == null){
+                        head = head.next;
+                        temp = head;
+                    }
+                    else{
+                        prev.next = temp.next;
+                        temp = temp.next;
+                    }
+                    continue;
+                }
+                
+                prev = temp;
+                temp = temp.next;
+            }
+            return head;
+        }
+        
         public bool IsPalindrome(int x) // works
         {
             string y = x.ToString();
@@ -56,6 +128,33 @@ namespace memokeria
             return true;
         }
         
+        public ListNode MergeNodes(ListNode head) //??
+        {
+            int tempSum = 0;
+            ListNode temp = head;
+            ListNode b = new ListNode();
+            ListNode bTemp = b;
+            
+            while (head != null)
+            {
+                if (head.val == 0) 
+                {
+                    if (tempSum != 0) // closing zero
+                    {
+                        bTemp.val = tempSum;
+                        tempSum = 0;
+                    }
+                    if (head.next != null) // zero in the middle
+                        bTemp = bTemp.next = new ListNode();
+                }
+
+                tempSum += temp.val;
+                head = head.next;
+            }
+
+            return b;
+        }
+
         public int PairSum(ListNode head) // works
         {
             Stack<int> x = new Stack<int>();
@@ -228,6 +327,51 @@ namespace memokeria
                 slow = slow.next;
 
             return slow;
+        }
+        
+        public ListNode DeleteMiddle(ListNode head) // works
+        {
+            if (head.next == null)
+                return null;
+            
+            ListNode fast = head;
+            ListNode slow = head;
+            ListNode prevSlow = slow;
+            
+            while (fast.next?.next != null)
+            {
+                prevSlow = slow;
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+
+            if (fast.next != null && fast.next.next == null){
+                prevSlow = slow;
+                slow = slow.next;
+            }
+            
+            prevSlow.next = slow.next;
+
+            return head;
+        }
+        
+        public void ReorderList(ListNode head) // works
+        {
+            ListNode first = head;
+            ListNode mid = ReverseList(MiddleNode(head));
+
+            while (first != null && mid != null)
+            {
+                ListNode temp = first.next;
+                first.next = mid;
+                first = temp;
+            
+                temp = mid.next;
+                mid.next = first;
+                mid = temp;
+            }
+            if(first!= null)
+                first.next=null ;
         }
         
         public int[] SortedSquares(int[] nums) // works
