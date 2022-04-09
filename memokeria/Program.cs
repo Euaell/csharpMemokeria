@@ -20,6 +20,125 @@ namespace memokeria
     
     internal class Program
     {
+        public bool IsPalindrome(int x) // works
+        {
+            string y = x.ToString();
+            char[] charArray = y.ToCharArray();
+            Array.Reverse( charArray );
+            return y == new string( charArray );
+        }
+        
+        public bool IsPalindrome(ListNode head) // works
+        {
+            Stack<int> x = new Stack<int>();
+            ListNode fast = head;
+            ListNode slow = head;
+            while (fast.next?.next != null)
+            {
+                x.Push(slow.val);
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            x.Push(slow.val);
+            // for even length choose the next node as a middle
+            if (fast.next != null && fast.next.next == null)
+                slow = slow.next;
+
+            // slow is equal to the middle of the list
+            while (slow != null)
+            {
+                // Console.WriteLine($"{slow.val}");
+                if (x.Count() != 0 && x.Pop() != slow.val)
+                    return false;
+                slow = slow.next;
+            }
+
+            return true;
+        }
+        
+        public int PairSum(ListNode head) // works
+        {
+            Stack<int> x = new Stack<int>();
+            ListNode fast = head;
+            ListNode slow = head;
+            while (fast.next?.next != null)
+            {
+                x.Push(slow.val);
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            x.Push(slow.val);
+            // for even length choose the next node as a middle
+            if (fast.next != null && fast.next.next == null)
+                slow = slow.next;
+            
+            // slow is equal to the middle of the list
+            int mts = 0;
+            while (slow != null)
+            {
+                int temp = x.Pop() + slow.val;
+                mts = temp > mts ? temp : mts;
+                slow = slow.next;
+            }
+
+            return mts;
+        }
+        
+        public ListNode ReverseList(ListNode head) // works
+        {
+            ListNode prev = null;
+           
+            while (head != null)
+            {
+                var temp = head.next;
+                head.next = prev;
+                prev = head;
+                head = temp;
+            }
+            return prev;
+        }
+        
+        public ListNode ReverseBetween(ListNode head, int left, int right) //??
+        {
+            ListNode currNode = head.next;
+            ListNode prevNode = head;
+            // ListNode nextNode = head.next;
+            int count = right - left;
+            while (currNode != null)
+            {
+                left--;
+                if (left == 0)
+                {
+                    
+                }
+                
+                currNode = currNode.next;
+            }
+
+            return null;
+        }
+        
+        public int NumComponents(ListNode head, int[] nums) //works
+        {
+            HashSet<int> x = nums.ToHashSet();
+            int count = 0;
+            int cur = 0;
+            while (head != null)
+            {
+                if (x.Contains(head.val))
+                    cur++;
+                else
+                    if (cur > 0)
+                    {
+                        count++;
+                        cur = 0;
+                    }
+                head = head.next;
+            }
+
+            return cur > 0 ? count + 1 : count;
+        }
+        
         public void Rotate(int[] nums, int k) // works
         {
             if (nums == null)
@@ -41,6 +160,7 @@ namespace memokeria
                 return null;
             int size = 0;
             ListNode tempNode = head;
+            
             while (tempNode != null)
             {
                 size++;
@@ -51,6 +171,7 @@ namespace memokeria
             tempNode = head;
             ListNode prevNode = null;
             ListNode newStart = head;
+            
             while (i-- > 0)
             {
                 while (tempNode.next != null)
@@ -127,18 +248,17 @@ namespace memokeria
         
         public ListNode SortList(ListNode head) // works
         {
-            if (head == null || head.next == null)
+            if (head?.next == null)
                 return head;
             ListNode fast = head;
             ListNode slow = head;
             ListNode hold = head;
-            while (fast.next != null && fast.next.next != null)
+            while (fast.next?.next != null)
             {
                 hold = slow;
                 slow = slow.next;
                 fast = fast.next.next;
             }
-
             if (fast.next != null && fast.next.next == null)
             {
                 hold = slow;
@@ -248,6 +368,27 @@ namespace memokeria
             return counter;
         }
         
+        public int MySqrt(int x) //works 
+        {
+            long left = 1;
+            long right = x;
+            while (left < right){
+                int mid = (int)(left + (right - left) / 2);
+                long squr = (long)mid * mid;
+                // Console.WriteLine($"Left: {left} Right: {right}");
+                if (squr == x)
+                    return mid;
+                if (squr < x)
+                    left = mid + 1;
+                else
+                    right = mid - 1;
+            }
+            if (left == right)
+                return left * left > x ? (int)left - 1 : (int)left;
+            
+            return (int)right;
+        }
+
         public static void Main(string[] args)
         {
             // TextWriter textWriter = new StreamWriter(@System.Environment.GetEnvironmentVariable("OUTPUT_PATH"), true);
