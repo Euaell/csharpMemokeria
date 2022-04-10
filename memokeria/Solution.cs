@@ -1,11 +1,17 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Linq;
 
 namespace memokeria
 {
+    public class ListNode {
+        public int val;
+        public ListNode next;
+        public ListNode(int val=0, ListNode next=null) {
+            this.val = val;
+            this.next = next;
+        }
+    }
     class Solution {
         
         public static void PrintColl<T>(List<T> x) // prints any collections
@@ -150,13 +156,11 @@ namespace memokeria
                 Int32.TryParse(tobeReturned, out retr);
                 return retr * -1;
             }
-            else
-            {
-                for (int i = re.Length - 1; i >= 0; i--)
-                    tobeReturned += re[i];
-                Int32.TryParse(tobeReturned, out retr);
-                return retr;
-            }
+
+            for (int i = re.Length - 1; i >= 0; i--)
+                tobeReturned += re[i];
+            Int32.TryParse(tobeReturned, out retr);
+            return retr;
         }
 
         public int MaxSubArray(int[] nums) // Kadane's Algorithm
@@ -430,7 +434,7 @@ namespace memokeria
         
         public int[] SearchRange(int[] nums, int target) // works well
         {
-            int[] x = new[] {-1, -1};
+            int[] x = {-1, -1};
             int count = 0;
             for (int i = 0; i < nums.Length; i++)
             {
@@ -462,7 +466,7 @@ namespace memokeria
         
         public void SortColors(int[] nums) // works well
         {
-            int[] freq = new[] {0, 0, 0};
+            int[] freq = {0, 0, 0};
             foreach (var va in nums)
                 freq[va]++;
 
@@ -666,7 +670,7 @@ namespace memokeria
                 this.next = next;
             }
         }
-        public ListNode AddTwoNumbers(ListNode l1, ListNode l2) // ACCEPTED
+        public ListNode AddTwoNumbers(ListNode l1, ListNode l2) // works
         {
             List<int> first = new List<int>();
             while (l1 != null)
@@ -714,11 +718,11 @@ namespace memokeria
 
             if (carry == 1)
                 sum.Add(1);
-            ListNode temp = new ListNode(sum[0], null);
+            ListNode temp = new ListNode(sum[0]);
             ListNode ret = temp;
             for (int i = 1; i < sum.Count; i++)
             {
-                temp.next = new ListNode(sum[i], null);
+                temp.next = new ListNode(sum[i]);
                 temp = temp.next;
             }
             
@@ -740,7 +744,7 @@ namespace memokeria
 
                 carry = sum / 10;
                 sum %= 10;
-                var temp = new ListNode(sum, null);
+                var temp = new ListNode(sum);
                 
                 if (ret == null)
                 {
@@ -755,10 +759,6 @@ namespace memokeria
                 
                 l1 = l1?.next;
                 l2 = l2?.next;
-                // if (l1 != null) // longer version of the 2 line code above
-                //     l1 = l1.next;
-                // if (l2 != null)
-                //     l2 = l2.next;
             }
             if (carry == 1 && currNode != null) 
                 currNode.next = new ListNode(1);
@@ -818,11 +818,11 @@ namespace memokeria
             if (carry == 1)
                 sum.Add(1);
             sum.Reverse();
-            ListNode temp = new ListNode(sum[0], null);
+            ListNode temp = new ListNode(sum[0]);
             ListNode ret = temp;
             for (int i = 1; i < sum.Count; i++)
             {
-                temp.next = new ListNode(sum[i], null);
+                temp.next = new ListNode(sum[i]);
                 temp = temp.next;
             }
             
@@ -981,37 +981,595 @@ namespace memokeria
             }
         }
         
+        Dictionary<Tuple<int, int>, int> _winnerDp = new Dictionary<Tuple<int, int>, int>();
+        int Rec(int [] nums, int sINd, int eInd)
+        {
+            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd + 1, eInd)))
+                _winnerDp.Add(new Tuple<int, int>(sINd + 1, eInd),Rec(nums, sINd + 1, eInd));
+            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd, eInd - 1)))
+                _winnerDp.Add(new Tuple<int, int>(sINd, eInd - 1),Rec(nums, sINd, eInd - 1));
+                
+            // return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+            return sINd > eInd
+                ? 0
+                : Math.Max(nums[sINd] - _winnerDp[new Tuple<int, int>(sINd + 1, eInd)], nums[eInd] - _winnerDp[new Tuple<int, int>(sINd, eInd - 1)]);
+        }
         public bool PredictTheWinner(int[] nums)
         {
-            var dp = new Dictionary<int[], int>();
-            int Rec(int sINd, int eInd)
-            {
-                if (!dp.ContainsKey(new[] {sINd + 1, eInd}))
-                    dp.Add(new []{sINd + 1, eInd},Rec(sINd + 1, eInd));
-                if (!dp.ContainsKey(new[] {sINd, eInd - 1}))
-                    dp.Add(new []{sINd, eInd - 1},Rec(sINd, eInd - 1));
-                
-                // return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
-                return sINd > eInd
-                    ? 0
-                    : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+            return Rec(nums, 0, nums.Length - 1) >= 0;
+        }
+        
+        
+        public ListNode[] SplitListToParts(ListNode head, int k) // works
+        {
+            ListNode slow = head;
+            int size = 0;
+            while (slow != null){
+                size++;
+                slow = slow.next;
             }
 
-            return Rec(0, nums.Length - 1) >= 0;
-            
+            ListNode [] ret = new ListNode[k];
+            slow = head;
+
+            for (int i = 0; i < k; i++)
+            {
+                ListNode prev = slow;
+                ret[i] = slow;
+                for (int j = 0; j < size / k + (i >= size % k ? 0 : 1); j++)
+                {
+                    prev = slow;
+                    slow = slow?.next;
+                }
+                if (prev != null) prev.next = null;
+            }
+            return ret;
         }
+        
+        public ListNode OddEvenList(ListNode head) // works
+        {
+            if (head == null)
+                return null;
+            ListNode odd = head;
+            ListNode even = head.next;
+        
+            ListNode evenHead = even;
+        
+            while (even?.next != null){
+                odd.next = even.next;
+                odd = odd.next;
+            
+                even.next = odd.next;
+                even = even.next;
+            }
+        
+            odd.next = evenHead;
+            return head;
+        }
+        
+        public ListNode RemoveElements(ListNode head, int val) // works
+        {
+            ListNode temp = head;
+            ListNode prev = null;
+        
+            while(temp != null && head != null){
+                // Console.WriteLine(temp.val);
+                if (temp.val == val){
+                    if (prev == null){
+                        head = head.next;
+                        temp = head;
+                    }
+                    else{
+                        prev.next = temp.next;
+                        temp = temp.next;
+                    }
+                    continue;
+                }
+                
+                prev = temp;
+                temp = temp.next;
+            }
+            return head;
+        }
+        
+        public bool IsPalindrome(int x) // works
+        {
+            string y = x.ToString();
+            char[] charArray = y.ToCharArray();
+            Array.Reverse( charArray );
+            return y == new string( charArray );
+        }
+        
+        public bool IsPalindrome(ListNode head) // works
+        {
+            Stack<int> x = new Stack<int>();
+            ListNode fast = head;
+            ListNode slow = head;
+            while (fast.next?.next != null)
+            {
+                x.Push(slow.val);
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            x.Push(slow.val);
+            // for even length choose the next node as a middle
+            if (fast.next != null && fast.next.next == null)
+                slow = slow.next;
+
+            // slow is equal to the middle of the list
+            while (slow != null)
+            {
+                // Console.WriteLine($"{slow.val}");
+                if (x.Count() != 0 && x.Pop() != slow.val)
+                    return false;
+                slow = slow.next;
+            }
+
+            return true;
+        }
+        
+        public ListNode MergeNodes(ListNode head) //??
+        {
+            int tempSum = 0;
+            ListNode temp = head;
+            ListNode b = new ListNode();
+            ListNode bTemp = b;
+            
+            while (head != null)
+            {
+                if (head.val == 0) 
+                {
+                    if (tempSum != 0) // closing zero
+                    {
+                        bTemp.val = tempSum;
+                        tempSum = 0;
+                    }
+                    if (head.next != null) // zero in the middle
+                        bTemp = bTemp.next = new ListNode();
+                }
+
+                tempSum += temp.val;
+                head = head.next;
+            }
+
+            return b;
+        }
+
+        public int PairSum(ListNode head) // works
+        {
+            Stack<int> x = new Stack<int>();
+            ListNode fast = head;
+            ListNode slow = head;
+            while (fast.next?.next != null)
+            {
+                x.Push(slow.val);
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            x.Push(slow.val);
+            // for even length choose the next node as a middle
+            if (fast.next != null && fast.next.next == null)
+                slow = slow.next;
+            
+            // slow is equal to the middle of the list
+            int mts = 0;
+            while (slow != null)
+            {
+                int temp = x.Pop() + slow.val;
+                mts = temp > mts ? temp : mts;
+                slow = slow.next;
+            }
+
+            return mts;
+        }
+        
+        public ListNode ReverseList(ListNode head) // works
+        {
+            ListNode prev = null;
+           
+            while (head != null)
+            {
+                var temp = head.next;
+                head.next = prev;
+                prev = head;
+                head = temp;
+            }
+            return prev;
+        }
+        
+        public ListNode ReverseBetween(ListNode head, int left, int right) //??
+        {
+            ListNode currNode = head.next;
+            ListNode prevNode = head;
+            // ListNode nextNode = head.next;
+            int count = right - left;
+            while (currNode != null)
+            {
+                left--;
+                if (left == 0)
+                {
+                    
+                }
+                
+                currNode = currNode.next;
+            }
+
+            return null;
+        }
+        
+        public int NumComponents(ListNode head, int[] nums) //works
+        {
+            HashSet<int> x = nums.ToHashSet();
+            int count = 0;
+            int cur = 0;
+            while (head != null)
+            {
+                if (x.Contains(head.val))
+                    cur++;
+                else
+                    if (cur > 0)
+                    {
+                        count++;
+                        cur = 0;
+                    }
+                head = head.next;
+            }
+
+            return cur > 0 ? count + 1 : count;
+        }
+        
+        public void Rotate(int[] nums, int k) // works
+        {
+            if (nums == null)
+                return;
+            int[] ret = new int[nums.Length];
+            Array.Copy(nums, ret, nums.Length);
+            int r = k % nums.Length;
+            int startInd = nums.Length - r;
+            int c = 0;
+            for (int i = startInd; i < nums.Length; i++)
+                nums[c++] = ret[i];
+            for (int i = 0; i < startInd; i++)
+                nums[c++] = ret[i];
+        }
+        
+        public ListNode RotateRight(ListNode head, int k) // works
+        {
+            if (head == null)
+                return null;
+            int size = 0;
+            ListNode tempNode = head;
+            
+            while (tempNode != null)
+            {
+                size++;
+                tempNode = tempNode.next;
+            }
+            
+            int i = k%size;
+            tempNode = head;
+            ListNode prevNode = null;
+            ListNode newStart = head;
+            
+            while (i-- > 0)
+            {
+                while (tempNode.next != null)
+                {
+                    prevNode = tempNode;
+                    tempNode = tempNode.next;
+                }
+                if ( tempNode == newStart) break;
+                tempNode.next = newStart;
+                newStart = tempNode;
+                if (prevNode != null) prevNode.next = null;
+            }
+
+            return tempNode;
+        }
+        
+        public ListNode MergeTwoLists(ListNode list1, ListNode list2) // works
+        {
+            var ret = new ListNode();
+            var last = ret;
+            while (list1 != null && list2 != null)
+            {
+                if (list1.val < list2.val)
+                {
+                    last.next = list1;
+                    list1 = list1.next;
+                }
+                else
+                {
+                    last.next = list2;
+                    list2 = list2.next;
+                }
+                last = last.next;
+            }
+
+            if (list1 != null)
+                last.next = list1;
+            if (list2 != null)
+                last.next = list2;
+            return ret.next;
+        }
+        
+        public ListNode MiddleNode(ListNode head) // works
+        {
+            ListNode fast = head;
+            ListNode slow = head;
+            while (fast.next != null && fast.next.next != null)
+            {
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+
+            if (fast.next != null && fast.next.next == null)
+                slow = slow.next;
+
+            return slow;
+        }
+        
+        public ListNode DeleteMiddle(ListNode head) // works
+        {
+            if (head.next == null)
+                return null;
+            
+            ListNode fast = head;
+            ListNode slow = head;
+            ListNode prevSlow = slow;
+            
+            while (fast.next?.next != null)
+            {
+                prevSlow = slow;
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+
+            if (fast.next != null && fast.next.next == null){
+                prevSlow = slow;
+                slow = slow.next;
+            }
+            
+            prevSlow.next = slow.next;
+
+            return head;
+        }
+        
+        public void ReorderList(ListNode head) // works
+        {
+            ListNode first = head;
+            ListNode mid = ReverseList(MiddleNode(head));
+
+            while (first != null && mid != null)
+            {
+                ListNode temp = first.next;
+                first.next = mid;
+                first = temp;
+            
+                temp = mid.next;
+                mid.next = first;
+                mid = temp;
+            }
+            if(first!= null)
+                first.next=null ;
+        }
+        
+        public int[] SortedSquares(int[] nums) // works
+        {
+            int left = 0;
+            int right = nums.Length - 1;
+            int[] ret = new int[nums.Length];
+            for (int i = nums.Length - 1; i >= 0; i--)
+            {
+                if (Math.Abs(nums[left]) > Math.Abs(nums[right]))
+                    ret[i] = nums[left] * nums[left++];
+                else
+                    ret[i] = nums[right] * nums[right--];
+            }
+
+            return ret;
+        }
+        
+        public ListNode SortList(ListNode head) // works
+        {
+            if (head?.next == null)
+                return head;
+            ListNode fast = head;
+            ListNode slow = head;
+            ListNode hold = head;
+            while (fast.next?.next != null)
+            {
+                hold = slow;
+                slow = slow.next;
+                fast = fast.next.next;
+            }
+            if (fast.next != null && fast.next.next == null)
+            {
+                hold = slow;
+                slow = slow.next;
+            }
+
+            hold.next = null; // separate the two lists
+            return MergeTwoLists(SortList(head), SortList(slow));
+        }
+        
+        public bool HasCycle(ListNode head) // works
+        {
+            HashSet<ListNode> visited = new HashSet<ListNode>();
+            while (head != null)
+            {
+                if (visited.Contains(head))
+                    return true;
+                visited.Add(head);
+                head = head.next;
+            }
+
+            return false;
+        }
+        
+        public ListNode DetectCycle(ListNode head) // works
+        {
+            HashSet<ListNode> visited = new HashSet<ListNode>();
+            while (head != null)
+            {
+                if (visited.Contains(head))
+                    return head;
+                visited.Add(head);
+                head = head.next;
+            }
+
+            return null;
+        }
+        
+        public ListNode GetIntersectionNode(ListNode headA, ListNode headB) // works
+        {
+            ListNode temp = headA;
+            HashSet<ListNode> visited = new HashSet<ListNode>();
+            while (temp != null)
+            {
+                visited.Add(temp);
+                temp = temp.next;
+            }
+
+            temp = headB;
+            while (temp != null)
+            {
+                if (visited.Contains(temp))
+                    return temp;
+                temp = temp.next;
+            }
+
+            return null;
+        }
+        
+        public string[] FindRestaurant(string[] list1, string[] list2) // works
+        {
+            List<string> ret = new List<string>();
+            Dictionary<string, int> shared =
+                list1.Select((v, i) => new {Key = v, Value = i}).ToDictionary(o => o.Key, o => o.Value);
+            // HashSet<string> shared = list1.ToHashSet();
+            int min = int.MaxValue;
+            for (int i = 0; i < list2.Length; i++)
+            {
+                if (shared.ContainsKey(list2[i]))
+                {
+                    int temp = shared[list2[i]] + i;
+                    if (min > temp)
+                    {
+                        min = temp;
+                        ret.Clear();
+                        ret.Add(list2[i]);
+                    }
+                    else if (min == temp)
+                        ret.Add(list2[i]);
+                }
+            }
+            
+            return ret.ToArray();
+        }
+        
+        public int MinMutation(string start, string end, string[] bank) // doesn't work
+        {
+            HashSet<string> bank1 = bank.ToHashSet();
+            bank1.Add(start);
+            char[] s = start.ToCharArray();
+            int counter = 0;
+            for (int i = 0; i < 8; i++)
+            {
+                if (s[i] != end[i])
+                {
+                    s[i] = end[i];
+                    if (bank1.Contains(new string(s)))
+                        counter++;
+                    else
+                        for (int j = 0; j < 8; j++)
+                        {
+                             
+                        }
+                }
+            }
+
+            return counter;
+        }
+        
+        public int MySqrt(int x) //works 
+        {
+            long left = 1;
+            long right = x;
+            while (left < right){
+                int mid = (int)(left + (right - left) / 2);
+                long squr = (long)mid * mid;
+                // Console.WriteLine($"Left: {left} Right: {right}");
+                if (squr == x)
+                    return mid;
+                if (squr < x)
+                    left = mid + 1;
+                else
+                    right = mid - 1;
+            }
+            if (left == right)
+                return left * left > x ? (int)left - 1 : (int)left;
+            
+            return (int)right;
+        }
+        
+        public int FindTheDistanceValue(int[] arr1, int[] arr2, int d) // works
+        {
+            Array.Sort(arr2);
+            int count = 0;
+            
+            foreach (var a1 in arr1)
+            {
+                bool temp = true;
+                int left = 0;
+                int right = arr2.Length - 1;
+
+                while (left < right)
+                {
+                    int mid = (right + left) / 2;
+                    if (Math.Abs(a1 - arr2[mid]) <= d)
+                    {
+                        temp = false;
+                        break;
+                    }
+                    if (arr2[mid] < a1)
+                        left = mid + 1;
+                    else
+                        right = mid - 1;
+                }
+                count = temp ? count + 1 : count;
+            }
+
+            return count;
+        }
+
+        public int[] digitize(int n)
+        {
+            int[] digits = new int[10];
+            
+            for (int i = digits.Length - 1; i >= 0; i--)
+            {
+                digits[i] = n / (int) Math.Pow(10, i + 1);
+                n %= (int) Math.Pow(10, i);
+            }
+
+            return digits;
+        }
+        private Dictionary<int, int> _happyDp = new Dictionary<int, int>();
+        public bool IsHappy(int n) // works
+        {
+            while (true)
+            {
+                if (n == 1) return true;
+
+                if (_happyDp.ContainsKey(n))
+                    return false;
+                
+                _happyDp.Add(n, digitize(n).Sum(va => va * va));
+                n = _happyDp[n];
+            }
+        }
+        
         
     }
 }
-// var dp = new Dictionary<int[], int>();
-// int Rec(int sINd, int eInd)
-// {
-//     if (!dp.ContainsKey(new[] {sINd + 1, eInd}))
-//         dp.Add(new []{sINd + 1, eInd},Rec(sINd + 1, eInd));
-//     if (!dp.ContainsKey(new[] {sINd, eInd - 1}))
-//         dp.Add(new []{sINd, eInd - 1},Rec(sINd, eInd - 1));
-//                 
-//     return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
-// }
-//
-// return Rec(0, nums.Length - 1) >= 0;
