@@ -1570,6 +1570,116 @@ namespace memokeria
             }
         }
         
+        public int FindPeakElement(int[] nums) // works
+        {
+            int left = 0;
+            int right = nums.Length - 1;
+        
+            while (left < right)
+            {
+                int mid = (right + left) / 2;
+                if (nums[mid] < nums[mid + 1])
+                    left = mid + 1;
+                else
+                    right = mid;
+            }
+
+            return left;
+        }
+        
+        public static int[] FindPeakGrid(int[][] mat) //??
+        {
+            int[] ret = {0, 0};
+            for (int i = 0; i < mat.Length; i++){
+                int left = 0;
+                int right = mat[i].Length - 1;
+                int mid = (right + left) / 2;
+                
+                while ( left <= right  && mid < mat[i].Length - 1){
+                    mid = (right + left) / 2;
+
+                    if (mat[i][mid] < mat[i][mid + 1])
+                        left = mid + 1;
+                    else
+                        right = mid - 1;
+                }
+                Console.WriteLine($"mat[i][mid] : {mat[i][mid]}");
+                if (i == 0 && i == mat.Length - 1)
+                    return new[] {i, mid};
+                if (i == 0 && mat[i + 1][mid] < mat[i][mid])
+                    return new []{i, mid};
+                if (i == mat.Length - 1 && mat[i - 1][mid] < mat[i][mid])
+                    return new[] {i, mid};
+                if (mat[i][mid] > mat[i + 1][mid] && mat[i][mid] > mat[i - 1][mid])
+                    return new[] {i, mid};
+            }
+
+            return ret;
+        }
+        
+        public char NextGreatestLetter(char[] letters, char target) // works
+        {
+            int size = letters.Length;
+        
+            int left = 0;
+            int right = size - 1;
+            int ret = left;
+        
+            while (left <= right){
+                int mid = (right + left) / 2;
+            
+                if (letters[mid] > target) {
+                    ret = mid;
+                    right = mid - 1;
+                }
+                else
+                {
+                    if (mid == size - 1)
+                        ret = 0;
+                    left = mid + 1;
+                }
+
+            }
+            return letters[ret];
+        }
+        
+        public int CountElements(int[] nums) // works
+        {
+            Array.Sort(nums);
+            
+            int min = nums[0];
+            int max = nums[nums.Length - 1];
+            int ret = 0;
+            
+            for (int i = 1; i < nums.Length - 1; i++)
+                ret = nums[i] > min && nums[i] < max ? ret + 1 : ret;
+            
+
+            return ret;
+        }
+
+        private bool IsPatMatch(string x, string p)
+        {
+            Dictionary<char, char> pattern = new Dictionary<char, char>();
+            HashSet<char> seen = new HashSet<char>();
+            for (int i = 0; i < p.Length; i++)
+            {
+                if (!pattern.ContainsKey(p[i]))
+                {
+                    if (seen.Contains(x[i])) return false;
+                    seen.Add(x[i]);
+                    pattern.Add(p[i], x[i]);
+                }
+                else if(pattern[p[i]] != x[i])
+                    return false;
+            }
+
+            return true;
+        }
+        public IList<string> FindAndReplacePattern(string[] words, string pattern) // works
+        {
+            return words.Where(word => IsPatMatch(word, pattern)).ToList();
+        }
         
     }
 }
