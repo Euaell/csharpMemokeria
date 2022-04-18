@@ -12,6 +12,20 @@ namespace memokeria
             this.next = next;
         }
     }
+    
+    public class TreeNode 
+    {
+        public int val;
+        public TreeNode left;
+        public TreeNode right;
+        public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) 
+        { 
+            this.val = val;
+            this.left = left;
+            this.right = right;
+        }
+    }
+    
     class Solution {
         
         public static void PrintColl<T>(List<T> x) // prints any collections
@@ -1681,5 +1695,140 @@ namespace memokeria
             return words.Where(word => IsPatMatch(word, pattern)).ToList();
         }
         
+        public int[][] Merge(int[][] intervals)
+        {
+            // var x = intervals.ToList();
+            // x.Sort();
+            for (int i = 0; i < intervals.Length; i++)
+            {
+                
+            }
+
+            return null;
+        }
+        public int CountNegatives(int[][] grid) // works
+        {
+            return grid.Sum(gr => gr.Count(va => va < 0));
+        }
+        
+        public int MaxIncreaseKeepingSkyline(int[][] grid) // ??
+        {
+            int n = grid.Length;
+            int[] rowMaxes = new int[n];
+            int[] colMaxes = new int[n];
+
+            for (int r = 0; r < n; ++r)
+                for (int c = 0; c < n; ++c) {
+                    rowMaxes[r] = Math.Max(rowMaxes[r], grid[r][c]);
+                    colMaxes[c] = Math.Max(colMaxes[c], grid[r][c]);
+                }
+
+            int ans = 0;
+            for (int r = 0; r < n; ++r)
+                for (int c = 0; c < n; ++c)
+                    ans += Math.Min(rowMaxes[r], colMaxes[c]) - grid[r][c];
+
+            return ans;
+        }
+        
+        public bool CheckPossibility(int[] nums)
+        {
+            int count = 0;
+            int min = int.MinValue;
+            for (int i = 0; i < nums.Length - 1; i++)
+            {
+                if (nums[i] > nums[i + 1])
+                {
+                    if (nums[i + 1] > min) count++;
+                    else return false;
+                }
+                else min = nums[i];
+                
+                
+                if (count > 1) break;
+            }
+            
+            return count <= 1;
+        }
+        
+        public int MissingNumber(int[] nums) // works
+        {
+            int sum = nums.Length * (nums.Length + 1) / 2;
+            return nums.Aggregate(sum, (current, i) => current - i);
+        }
+
+        private HashSet<int> fmp;
+        private void incRet(ref int ret)
+        {
+            while (fmp.Contains(++ret)) ;
+        }
+        public int FirstMissingPositive(int[] nums) // works
+        {
+            fmp = nums.ToHashSet();
+            int ret = 1;
+            foreach (var t in nums)
+                if (t > 0 && t == ret)
+                    incRet(ref ret);
+
+            return ret;
+        }
+        
+        public int FindDuplicate(int[] nums) // doesn't work
+        {
+            int sum = nums.Length * (nums.Length - 1) / 2;
+            return nums.Sum() - sum;
+        }
+
+        public char FindTheDifference(string s, string t) // doesn't work
+        {
+            HashSet<char> x = s.ToHashSet();
+            foreach(var c in t){
+                if (!x.Contains(c))
+                    return c;
+                x.Remove(c);
+            }
+
+            return '\0';
+        }
+        
+        public int SingleNumber(int[] nums) 
+        {
+            Array.Sort(nums);
+            int ret = nums[0];
+            for (int i = 0; i < nums.Length - 1; i++)
+            {
+                if (nums[i] == nums[i + 1]) continue;
+                ret = nums[i];
+                break;
+            }
+
+            return ret;
+        }
+        
+        public int[][] FloodFill(int[][] image, int sr, int sc, int newColor) // works
+        {
+            int maxRow = image.Length;
+            int maxCol = image[0].Length;
+            
+            HashSet<(int, int)> visited = new HashSet<(int, int)>();
+            Queue<(int, int)> x = new Queue<(int, int)>();
+            
+            x.Enqueue((sr, sc));
+            int sCol = image[sr][sc];
+            while (x.Count != 0)
+            {
+                var (r, c) = x.Dequeue();
+                visited.Add((r, c));
+                image[r][c] = newColor;
+                
+                if (r + 1 < maxRow && image[r + 1][c] == sCol && !visited.Contains((r + 1, c))) x.Enqueue((r + 1, c));
+                if (r - 1 >= 0 && image[r - 1][c] == sCol && !visited.Contains((r - 1, c))) x.Enqueue((r - 1, c));
+                if (c + 1 < maxCol && image[r][c + 1] == sCol && !visited.Contains((r, c + 1))) x.Enqueue((r, c + 1));
+                if (c - 1 >= 0 && image[r][c - 1] == sCol && !visited.Contains((r, c - 1))) x.Enqueue((r, c - 1));
+            }
+
+            return image;
+        }
+
     }
 }

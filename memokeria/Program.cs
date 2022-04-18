@@ -33,6 +33,12 @@ namespace memokeria
             int[][] arr6 = new[] {new[] {10, 20, 15}, new[] {21, 30, 14}, new[] {7, 16, 32}};
             Solution.PrintColl(Solution.FindPeakGrid(arr6).ToList());
 
+            Dictionary<string, string> x = new Dictionary<string, string>();
+            x.Add("euael", "anbesa");
+            foreach (var (key, va) in x.Select(y => (y.Key, y.Value)))
+            {
+                Console.WriteLine($"key: {key}");
+            }
         }
     }
 }
