@@ -2007,7 +2007,6 @@ namespace memokeria
             return image;
         }
         
-        
         private Dictionary<int, List<int>> dia = new Dictionary<int, List<int>>();
         private void SDia(int row, int col, int[][] mat)
         {
@@ -2035,6 +2034,36 @@ namespace memokeria
             }
 
             return mat;
+        }
+        
+        public int[] KWeakestRows(int[][] mat, int k) // works
+        {
+            List<int> weaks = new List<int>();
+            HashSet<int> vis = new HashSet<int>();
+            int j = 0;
+            while (j++ < mat.Length)
+            {
+                int weak = 0;
+                while (vis.Contains(weak))
+                    weak++;
+
+                for (int i = 1; i < mat.Length; i++)
+                {
+                    if (vis.Contains(i)) continue;
+                    
+                    int cW = mat[weak].Count(x => x == 1);
+                    int cI = mat[i].Count(x => x == 1);
+                    if (cW > cI || (cW == cI && i < weak))
+                    {
+                        weak = i;
+                    }
+                }
+
+                vis.Add(weak);
+                weaks.Add(weak);
+            }
+            
+            return weaks.ToArray();
         }
 
         // BINARY SEARCH TREE
@@ -2079,8 +2108,6 @@ namespace memokeria
                 root = root.right;
             }
         }
-        
-        
         
     }
 }
