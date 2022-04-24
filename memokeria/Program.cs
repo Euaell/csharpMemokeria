@@ -39,6 +39,11 @@ namespace memokeria
             {
                 Console.WriteLine($"key: {key}");
             }
+
+            
+            int[][] m = new[] {new[] {1,3,5}};
+            bool v = a.SearchMatrixII(m, 1);
+            Console.WriteLine($"{v}");
         }
     }
 }

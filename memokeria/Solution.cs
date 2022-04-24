@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 
 namespace memokeria
@@ -446,36 +447,223 @@ namespace memokeria
             return ret1;
         }
         
-        public int[] SearchRange(int[] nums, int target) // works well
+        public int[] SearchRange(int[] nums, int target) // works
         {
-            int[] x = {-1, -1};
-            int count = 0;
-            for (int i = 0; i < nums.Length; i++)
+            int[] ret = {-1, -1};
+            if (nums.Length == 0)
+                return ret;
+
+            int left = 0;
+            int right = nums.Length - 1;
+            int mid = left;
+            while (left <= right)
             {
-                if (nums[i] == target && count == 0)
+                mid = left + (right - left) / 2;
+                if (nums[mid] > target)
+                    right = mid - 1;
+                else if (nums[mid] < target)
+                    left = mid + 1;
+                else if (nums[mid] == target)
                 {
-                    x[0] = i;
-                    x[1] = i;
-                    count++;
-                }
-                else if (nums[i] != target && count > 0)
-                {
-                    x[1] = i - 1;
+                    ret[0] = mid;
+                    ret[1] = mid;
                     break;
-                }
-                else if (nums[i] == target && i == nums.Length -1)
-                {
-                    if (count == 0)
-                    {
-                        x[0] = i;
-                        x[1] = i;
-                    }
-                    else
-                        x[1] = i;
                 }
             }
 
-            return x;
+            if (ret[0] == -1) return ret;
+            
+            int right1 = mid;
+            int left1 = mid;
+            // Find the starting
+            while (left <= right1)
+            {
+                mid = left + (right1 - left) / 2;
+                if (nums[mid] < target)
+                    left = mid + 1;
+                else
+                    right1 = mid - 1;
+            }
+
+            ret[0] = left;
+            // Find the ending
+            while (left1 <= right)
+            {
+                mid = left1 + (right1 - left1) / 2;
+                if (nums[mid] > target)
+                    right = mid - 1;
+                else
+                    left1 = mid + 1;
+            }
+
+            ret[1] = right;
+            return ret;
+        }
+        
+        public int[] TwoSum(int[] numbers, int target) // works
+        {
+            int[] ret = new int[2];
+
+            for (int i = 0; i < numbers.Length; i++)
+            {
+                int expected = target - numbers[i];
+                ret[0] = i + 1; // 1 - INDEXED
+                int left = i + 1;
+                int right = numbers.Length - 1;
+                
+                while (left <= right)
+                {
+                    int mid = (left + right) / 2;
+                    if (numbers[mid] < expected)
+                        left = mid + 1;
+                    else if (numbers[mid] > expected)
+                        right = mid - 1;
+                    else
+                    {
+                        ret[1] = mid + 1;
+                        return ret;
+                    }
+                }
+            }
+            
+            return ret;
+        }
+        
+        public bool CheckIfExist(int[] arr) // works
+        {
+            Array.Sort(arr);
+            for (int i = 0; i < arr.Length; i++)
+            {
+                int left;
+                int right;
+                int mid;
+                if (arr[i] < 0)
+                {
+                    left = 0;
+                    right = i + 1;
+                    mid = right;
+                }
+                else
+                {
+                    left = i + 1;
+                    right = arr.Length - 1;
+                    mid = left;
+                }
+                
+                while (left <= right)
+                {
+                    mid = (left + right) / 2;
+                    if (arr[mid] < arr[i] * 2)
+                        left = mid + 1;
+                    if (arr[mid] > arr[i] * 2)
+                        right = mid - 1;
+                    if (arr[mid] == arr[i] * 2)
+                        break;
+                }
+
+                if (arr[mid] == arr[i] * 2) return true;
+            }
+
+            return false;
+        }
+        
+        public int NthUglyNumber(int n, int a, int b, int c) // doesn't work
+        {
+            int uglyNo = a;
+            int counter = 0;
+            int index = 2;
+            while (counter < n)
+            {
+                if (index % a == 0 || index % b == 0 || index % c == 0)
+                {
+                    uglyNo = index;
+                    counter++;
+                }
+
+                index++;
+            }
+            // Console.Write("ugly numbers:  ");
+            // PrintColl(uglyNo);
+            return uglyNo;
+        }
+        
+        public bool SearchMatrix(int[][] matrix, int target) // works
+        {
+            foreach (var rw in matrix)
+            {
+                int left = 0;
+                int right = rw.Length - 1;
+                int mid = 0;
+                while (left <= right)
+                {
+                    mid = (left + right) / 2;
+                    if (rw[mid] < target)
+                        left = mid + 1;
+                    if (rw[mid] > target)
+                        right = mid - 1;
+                    if (rw[mid] == target)
+                        break;
+                }
+
+                if (rw[mid] == target) return true;
+            }
+
+            return false;
+        }
+        
+        public bool SearchMatrixII(int[][] matrix, int target) // works
+        {
+            foreach (var t in matrix)
+                foreach (var va in t)
+                        if (va == target) return true;
+
+            return false;
+        }
+        
+        public int DominantIndex(int[] nums) // works
+        {
+            int max = nums[0];
+            int maxIndex = 0;
+            for (int i = 1; i < nums.Length; i++)
+            {
+                if (nums[i] > max)
+                {
+                    max = nums[i];
+                    maxIndex = i;
+                }
+            }
+            Array.Sort(nums);
+            for (int i = 0; i < nums.Length - 1; i++)
+            {
+                if (nums[i] * 2 > max)
+                    return -1;
+            }
+
+            return maxIndex;
+        }
+        
+        public int FindFinalValue(int[] nums, int original) // works
+        {
+            Array.Sort(nums);
+            while (true)
+            {
+                int left = 0;
+                int right = nums.Length - 1;
+                int mid = left;
+                while (left <= right)
+                {
+                    mid = (left + right) / 2;
+                    if (nums[mid] < original)
+                        left = mid + 1;
+                    if (nums[mid] > original)
+                        right = mid - 1;
+                    if (nums[mid] == original)
+                        break;
+                }
+                if (nums[mid] == original) original *= 2;
+                else break;
+            }
+            return original;
         }
         
         public void SortColors(int[] nums) // works well
@@ -859,7 +1047,8 @@ namespace memokeria
             return ret;
         }
         
-        public int RemoveDuplicatesTwo(int[] nums) {
+        public int RemoveDuplicatesTwo(int[] nums) 
+        {
             int j = 0;
             int counter = 0;
             for (int i = 1; i < nums.Length && j < nums.Length - 1; i++)
@@ -1529,35 +1718,17 @@ namespace memokeria
         
         public int FindTheDistanceValue(int[] arr1, int[] arr2, int d) // works
         {
-            Array.Sort(arr2);
             int count = 0;
-            
-            foreach (var a1 in arr1)
+            foreach(var va in arr1)
             {
-                bool temp = true;
-                int left = 0;
-                int right = arr2.Length - 1;
-
-                while (left < right)
-                {
-                    int mid = (right + left) / 2;
-                    if (Math.Abs(a1 - arr2[mid]) <= d)
-                    {
-                        temp = false;
-                        break;
-                    }
-                    if (arr2[mid] < a1)
-                        left = mid + 1;
-                    else
-                        right = mid - 1;
-                }
-                count = temp ? count + 1 : count;
+                if (arr2.Any(vb => Math.Abs(va - vb) <= d))
+                    count--;
+                count++;
             }
-
             return count;
         }
 
-        public int[] digitize(int n)
+        private int[] digitize(int n)
         {
             int[] digits = new int[10];
             
@@ -1804,31 +1975,112 @@ namespace memokeria
 
             return ret;
         }
-        
+
+        private (int, int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
         public int[][] FloodFill(int[][] image, int sr, int sc, int newColor) // works
         {
             int maxRow = image.Length;
             int maxCol = image[0].Length;
-            
+
+            bool isValid(int row, int col)
+            {
+                return row < maxRow && row >= 0 && col < maxCol && col >= 0;
+            }
+
             HashSet<(int, int)> visited = new HashSet<(int, int)>();
             Queue<(int, int)> x = new Queue<(int, int)>();
+            int oldColor = image[sr][sc];
             
             x.Enqueue((sr, sc));
-            int sCol = image[sr][sc];
+            
             while (x.Count != 0)
             {
                 var (r, c) = x.Dequeue();
-                visited.Add((r, c));
                 image[r][c] = newColor;
+                visited.Add((r, c));
                 
-                if (r + 1 < maxRow && image[r + 1][c] == sCol && !visited.Contains((r + 1, c))) x.Enqueue((r + 1, c));
-                if (r - 1 >= 0 && image[r - 1][c] == sCol && !visited.Contains((r - 1, c))) x.Enqueue((r - 1, c));
-                if (c + 1 < maxCol && image[r][c + 1] == sCol && !visited.Contains((r, c + 1))) x.Enqueue((r, c + 1));
-                if (c - 1 >= 0 && image[r][c - 1] == sCol && !visited.Contains((r, c - 1))) x.Enqueue((r, c - 1));
+                foreach (var (t1, t2) in direction)
+                    if (isValid(r + t1, c + t2) && image[r + t1][c + t2] == oldColor && !visited.Contains((r + t1, c + t2))) x.Enqueue((r + t1, c + t2));
+
             }
 
             return image;
         }
+        
+        
+        private Dictionary<int, List<int>> dia = new Dictionary<int, List<int>>();
+        private void SDia(int row, int col, int[][] mat)
+        {
+            dia.Add(row - col, new List<int>());
+            while(row < mat.Length && col < mat[0].Length)
+                dia[row - col].Add(mat[row++][col++]);
+            dia[row - col].Sort();
+        }
+        private void fillDia(int row, int col, int[][] ret)
+        {
+            foreach (var va in dia[row - col])
+                ret[row++][col++] = va;
+        }
+        public int[][] DiagonalSort(int[][] mat) //works
+        {
+            for (int i = 0; i < mat.Length; i++)
+            {
+                SDia(i, 0, mat);
+                fillDia(i, 0, mat);
+            }
+            for (int i = 1; i < mat[0].Length; i++)
+            {
+                SDia(0, i, mat);
+                fillDia(0, i, mat);
+            }
 
+            return mat;
+        }
+
+        // BINARY SEARCH TREE
+        public TreeNode InsertIntoBST(TreeNode root, int val) // works
+        {
+            if (root == null)
+                return new TreeNode(val);
+            if (root.val > val)
+            {
+                // go to left
+                if (root.left == null)
+                    root.left = new TreeNode(val);
+                else
+                    InsertIntoBST(root.left, val);
+            }
+            else
+            {
+                // go to right
+                if (root.right == null)
+                    root.right = new TreeNode(val);
+                else
+                    InsertIntoBST(root.right, val);
+            }
+
+            return root;
+        }
+
+        public TreeNode SearchBST(TreeNode root, int val) // works
+        {
+            while (true)
+            {
+                if (root == null) return null;
+
+                if (root.val > val)
+                {
+                    root = root.left;
+                    continue;
+                }
+
+                if (root.val == val) return root;
+                
+                root = root.right;
+            }
+        }
+        
+        
+        
     }
 }
