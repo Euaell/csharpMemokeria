@@ -1202,6 +1202,31 @@ namespace memokeria
             return Rec(nums, 0, nums.Length - 1) >= 0;
         }
         
+        public int[] Merge(int[] arr1, int[] arr2)
+        {
+            var n = arr1.Length + arr2.Length;
+            var res = new int[n];
+            for (int i = 0, j = 0, k = 0; i < n; i++)
+            {
+                if (j < arr1.Length && k < arr2.Length)
+                    if (arr1[j] <= arr2[k])
+                        res[i] = arr1[j++];
+                    else
+                        res[i] = arr2[k++];
+                else if (j >= arr1.Length)
+                    res[i] = arr2[k++];
+                else if (k >= arr2.Length)
+                    res[i] = arr1[j++];
+            }
+
+            return res;
+        }
+        public int[] MergeSort(int[] arr)
+        {
+            var n = arr.Length;
+        
+            return n <= 1 ? arr : Merge(MergeSort(arr.Take(n / 2).ToArray()), MergeSort(arr.Skip(n / 2).ToArray()));
+        }
         
         public ListNode[] SplitListToParts(ListNode head, int k) // works
         {
@@ -1494,6 +1519,19 @@ namespace memokeria
             if (list2 != null)
                 last.next = list2;
             return ret.next;
+        }
+
+        private ListNode merge(ListNode[] lists, int start, int end)
+        {
+            if (start == end) return lists[start];
+            int mid = (start + end) / 2;
+            var left = merge(lists, start, mid);
+            var right = merge(lists, mid + 1, end); // without +1 infinite recursion ??
+            return MergeTwoLists(left, right);
+        }
+        public ListNode MergeKLists(ListNode[] lists) // works
+        {
+            return lists.Length == 0 ? null : merge(lists, 0, lists.Length - 1);
         }
         
         public ListNode MiddleNode(ListNode head) // works
@@ -2066,6 +2104,64 @@ namespace memokeria
             return weaks.ToArray();
         }
 
+        public int MaxDistance(int[] nums1, int[] nums2) // works
+        {
+            int ret = 0;
+        
+            for (int i = 0; i < nums1.Length; i++)
+            {
+                int left = i;
+                int right = nums2.Length - 1;
+                int mid = left;
+                while (left <= right)
+                {
+                    mid = left + (right - left) / 2;
+                    if (nums2[mid] < nums1[i])
+                        right = mid - 1;
+                    if (nums2[mid] >= nums1[i])
+                    {
+                        left = mid + 1;
+                        if ( i <= mid && ret < mid - i)
+                            ret = mid - i;
+                    }
+                }                
+            }
+            return ret;
+        }
+        
+        public int Search(int[] nums, int target) // works
+        {
+            int left = 1;
+            int right = nums.Length - 1;
+        
+            while (left <= right){
+                int mid = (left + right) / 2;
+                // left side
+                if (nums[mid - 1] < nums[mid])
+                    left = mid + 1;
+                // right side
+                if (nums[mid - 1] > nums[mid])
+                    right = mid - 1;
+            }
+
+            if (target < nums[0])
+                right = nums.Length - 1;
+            else
+                left = 0;
+
+            while (left <= right)
+            {
+                int mid = (left + right) / 2;
+                if (nums[mid] > target)
+                    right = mid - 1;
+                if (nums[mid] < target)
+                    left = mid + 1;
+                if (nums[mid] == target)
+                    return mid;
+            }
+            return nums[0] == target ? 0 : -1;
+        }
+        
         // BINARY SEARCH TREE
         public TreeNode InsertIntoBST(TreeNode root, int val) // works
         {
@@ -2109,5 +2205,39 @@ namespace memokeria
             }
         }
         
+        // Greedy
+        public int MaxDistance(int[] colors) // works
+        {
+            int max = 0;
+            for (int i = 0; i < colors.Length; i++)
+                for (int j = i + 1; j < colors.Length; j++)
+                    if (colors[j] != colors[i] && j - i > max)
+                        max = j - i;
+            return max;
+        }
+        
+        public int MaximumDifference(int[] nums) // works 
+        {
+            int maxDiff = -1;
+            for (int i = 0; i < nums.Length; i++)
+                for (int j = i + 1; j < nums.Length; j++)
+                    if (nums[i] < nums[j] && nums[j] - nums[i] > maxDiff)
+                        maxDiff = nums[j] - nums[i];
+            
+            return maxDiff;
+        }
+        
+        public int[] ReplaceElements(int[] arr) // works
+        {
+            int max = -1;
+            for (int i = arr.Length - 1; i >= 0; i--)
+            {
+                int temp = max;
+                if (arr[i] > max) max = arr[i];
+                arr[i] = temp;
+            }
+
+            return arr;
+        }
     }
 }
