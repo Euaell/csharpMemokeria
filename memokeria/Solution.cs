@@ -29,7 +29,7 @@ namespace memokeria
     
     class Solution {
         
-        public static void PrintColl<T>(List<T> x) // prints any collections
+        public static void PrintColl<T>(IEnumerable<T> x) // prints any collections
         {
             foreach (var va in x)
                 Console.Write($" {va} ");
