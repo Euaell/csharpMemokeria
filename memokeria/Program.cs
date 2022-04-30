@@ -30,9 +30,8 @@ namespace memokeria
             // Solution.PrintColl(a.MergeSort(arr5));
             int[][] arr6 = {new[] {10, 20, 15}, new[] {21, 30, 14}, new[] {7, 16, 32}};
             Solution.PrintColl(Solution.FindPeakGrid(arr6));
-            
-            
-
+            int[][] arr7 = {new[] {1993, 1999}, new[] {2000, 2010}};
+            Console.WriteLine($"answer : {a.MaximumPopulation(arr7)}");
         }
     }
 }

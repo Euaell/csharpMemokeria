@@ -37,6 +37,32 @@ namespace memokeria
             Console.WriteLine(" ");
         }
         
+        public int MaximumPopulation(int[][] logs) // doesn't work
+        {
+            Dictionary<int, int> x = new Dictionary<int, int>();
+            foreach (var va in logs)
+            {
+                for (int i = va[0]; i < va[1]; i++)
+                {
+                    if (x.ContainsKey(i)) x[i]++;
+                    else x.Add(i, 1);
+                }
+            }
+
+            int max = 0;
+            int key = 0;
+            foreach (var pair in x)
+            {
+                if (pair.Value > max)
+                {
+                    max = pair.Value;
+                    key = pair.Key;
+                }
+            }
+
+            return key;
+        }
+        
         public string DecodeString(string s) // works
         {
             string x = "";
@@ -178,9 +204,9 @@ namespace memokeria
             return retr;
         }
 
-        public int MaxSubArray(int[] nums) // Kadane's Algorithm
+        public int MaxSubArray(int[] nums) // Kadane's Algorithm // works
         {
-            int sum = 0;
+            int sum = nums[0];
             int curSum = 0;
             foreach (var va in nums)
             {
@@ -209,6 +235,125 @@ namespace memokeria
                 counter = 0;
             }
             return max;
+        }
+        
+        public int SecondHighest(string s) // works
+        {
+            HashSet<int> visited = new HashSet<int>();
+            int max = -1;
+            int sMax = -1;
+            foreach(var va in s.Where(va => char.IsDigit(va))){
+                int x = (int) char.GetNumericValue(va);
+                if (!visited.Contains(x)){
+                    if (x > max){
+                        sMax = max;
+                        max = x;
+                        visited.Add(x);
+                    }
+                    else if (x > sMax){
+                        sMax = x;
+                        visited.Add(x);
+                    }
+                }
+            } 
+            return sMax;
+        }
+
+
+        private bool isvalid(int row, int col, char[][] board) 
+        {
+            HashSet<char> exi = new HashSet<char>();
+            // check horizontal
+            for (int i = row; i < row + 3; i++)
+            {
+                for (int j = 0; j < 9; j++)
+                {
+                    char x = board[i][j];
+                    if (exi.Contains(x)) return false;
+                    if (x != '.') exi.Add(x);
+                }
+                exi.Clear();
+            }
+            
+            // check vertical
+            for (int j = col; j < col + 3; j++)
+            {
+                for (int i = 0; i < 9; i++)
+                {
+                    char x = board[i][j];
+                    if (exi.Contains(x)) return false;
+                    if (x != '.') exi.Add(x);
+                } 
+                exi.Clear();
+            }
+            
+            // check box
+            for (int i = row; i < row + 3; i++)
+            {
+                for (int j = col; j < col + 3; j++)
+                {
+                    char x = board[i][j];
+                    if (exi.Contains(x)) return false;
+                    if (x != '.') exi.Add(x);
+                }
+            }
+
+            return true;
+        }
+        public bool IsValidSudoku(char[][] board) // works
+        {
+            for (int i = 0; i < 9; i += 3)
+            for (int j = 0; j < 9; j += 3)
+                    if (!isvalid(i, j, board)) return false;
+            return true;
+        }
+        
+        public bool CheckValid(int[][] matrix) // works
+        {
+            int n = matrix.Length;
+            HashSet<int> exi = new HashSet<int>();
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (exi.Contains(matrix[i][j])) return false;
+                    exi.Add(matrix[i][j]);
+                }
+                exi.Clear();
+            }
+
+            for (int j = 0; j < n; j++)
+            {
+                for (int i = 0; i < n; i++)
+                {
+                    if (exi.Contains(matrix[i][j])) return false;
+                    exi.Add(matrix[i][j]);
+                }
+                exi.Clear();
+            }
+            return true;
+        }
+        
+        public IList<string> CommonChars(string[] words) // aza tyake
+        {
+            int s = words.Length;
+            IList<string> ret = new List<string>();
+            Dictionary<string, int> freq = new Dictionary<string, int>();
+            foreach (var word in words)
+            {
+                foreach (var n in word.Select(t => String.Concat(t, "")))
+                {
+                    if (freq.ContainsKey(n)) freq[n]++;
+                    else freq.Add(n, 1);
+                }
+            }
+
+            foreach (var pair in freq)
+            {
+                if (pair.Value >= s)
+                    ret.Add(pair.Key);
+            }
+            return ret;
         }
         
         public List<int> compareTriplets(List<int> a, List<int> b)
@@ -274,27 +419,59 @@ namespace memokeria
             return reReturnRank;
         }
         
-        public int[] TopKFrequent(int[] nums, int k) // wrong answer
+        public int[] TopKFrequent(int[] nums, int k) // works
         {
-            var retu = new int[k];
-            
-            var freq = new SortedDictionary<int, int> {{nums[0], 1}}; // value, frequency
-            for(var i = 1; i < nums.Length - 1; i++){
-                if(nums[i] == nums[i - 1])
-                    freq[nums[i]]++;
-                else
-                    freq.Add(nums[i], 1);
-            }
-
-            var frequency = freq.Values.ToArray();
-            while (k > 0)
+            Dictionary<int, int> freq = new Dictionary<int, int>();
+            foreach (var va in nums)
             {
-                retu[k] = freq.Last().Key;
-                freq.Remove(frequency[k]);
-                k--;
+                if (freq.ContainsKey(va)) freq[va]++;
+                else freq.Add(va, 1);
+            }
+            
+            freq = freq.OrderBy(pair => pair.Value).Reverse().ToDictionary(pair => pair.Key, pair => pair.Value);
+            return freq.Keys.Take(k).ToArray();
+        }
+        
+        public IList<string> TopKFrequent(string[] words, int k) // should Work
+        {
+            Dictionary<string, int> freq = new Dictionary<string, int>();
+            foreach (var va in words)
+            {
+                if (freq.ContainsKey(va)) freq[va]++;
+                else freq.Add(va, 1);
+            }
+            freq = freq.OrderBy(pair => pair.Value).Reverse().ToDictionary(pair => pair.Key, pair => pair.Value);
+            return freq.Keys.Take(k).ToList();
+        }
+        public string FrequencySort(string s) // TLE
+        {
+            Dictionary<char, int> freq = new Dictionary<char, int>();
+            foreach (var va in s)
+            {
+                if (freq.ContainsKey(va)) freq[va]++;
+                else freq.Add(va, 1);
+            }
+            freq = freq.OrderBy(pair => pair.Value).Reverse().ToDictionary(pair => pair.Key, pair => pair.Value);
+            string x = "";
+            foreach (var va in freq)
+            {
+                for (int i = 0; i < va.Value; i++)
+                    x += va;
             }
 
-            return retu;
+            return x;
+        }
+        
+        public int FindKthLargest(int[] nums, int k) // doesn't work
+        {
+            Dictionary<int, int> freq = new Dictionary<int, int>();
+            foreach (var va in nums)
+            {
+                if (freq.ContainsKey(va)) freq[va]++;
+                else freq.Add(va, 1);
+            }
+            freq = freq.OrderBy(pair => pair.Value).ToDictionary(pair => pair.Key, pair => pair.Value);
+            return freq.Keys.ToArray()[freq.Count - 1 - k];
         }
         
         public static List<int> gradingStudents(List<int> grades) // works well
@@ -1169,39 +1346,7 @@ namespace memokeria
             }
             return ret;
         }
-        
-        public int Fib(int n) // works (slow, use array to store calculated results)
-        {
-            
-            switch (n)
-            {
-                case 0:
-                    return 0;
-                case 1:
-                    return 1;
-                default:
-                    return Fib(n - 1) + Fib(n - 2);
-            }
-        }
-        
-        Dictionary<Tuple<int, int>, int> _winnerDp = new Dictionary<Tuple<int, int>, int>();
-        int Rec(int [] nums, int sINd, int eInd)
-        {
-            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd + 1, eInd)))
-                _winnerDp.Add(new Tuple<int, int>(sINd + 1, eInd),Rec(nums, sINd + 1, eInd));
-            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd, eInd - 1)))
-                _winnerDp.Add(new Tuple<int, int>(sINd, eInd - 1),Rec(nums, sINd, eInd - 1));
-                
-            // return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
-            return sINd > eInd
-                ? 0
-                : Math.Max(nums[sINd] - _winnerDp[new Tuple<int, int>(sINd + 1, eInd)], nums[eInd] - _winnerDp[new Tuple<int, int>(sINd, eInd - 1)]);
-        }
-        public bool PredictTheWinner(int[] nums)
-        {
-            return Rec(nums, 0, nums.Length - 1) >= 0;
-        }
-        
+
         public int[] Merge(int[] arr1, int[] arr2)
         {
             var n = arr1.Length + arr2.Length;
@@ -2161,7 +2306,7 @@ namespace memokeria
             }
             return nums[0] == target ? 0 : -1;
         }
-        
+
         // BINARY SEARCH TREE
         public TreeNode InsertIntoBST(TreeNode root, int val) // works
         {
@@ -2239,5 +2384,110 @@ namespace memokeria
 
             return arr;
         }
+        
+        
+        // Dynamic Programming
+        private Dictionary<Tuple<int, int>, int> _winnerDp = new Dictionary<Tuple<int, int>, int>();
+        int Rec(int [] nums, int sINd, int eInd)
+        {
+            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd + 1, eInd)))
+                _winnerDp.Add(new Tuple<int, int>(sINd + 1, eInd),Rec(nums, sINd + 1, eInd));
+            if (!_winnerDp.ContainsKey(new Tuple<int, int>(sINd, eInd - 1)))
+                _winnerDp.Add(new Tuple<int, int>(sINd, eInd - 1),Rec(nums, sINd, eInd - 1));
+                
+            // return sINd == eInd ? nums[sINd] : Math.Max(nums[sINd] - dp[new []{sINd + 1, eInd}], nums[eInd] - dp[new []{sINd, eInd - 1}]);
+            return sINd > eInd
+                ? 0
+                : Math.Max(nums[sINd] - _winnerDp[new Tuple<int, int>(sINd + 1, eInd)], nums[eInd] - _winnerDp[new Tuple<int, int>(sINd, eInd - 1)]);
+        }
+        public bool PredictTheWinner(int[] nums)
+        {
+            return Rec(nums, 0, nums.Length - 1) >= 0;
+        }
+        
+        private Dictionary<int, int> dpFib = new Dictionary<int, int>();
+        public int Fib(int n) // works
+        {
+            switch (n)
+            {
+                case 0:
+                    return 0;
+                case 1:
+                    return 1;
+            }
+
+            if (!dpFib.ContainsKey(n - 1))
+                dpFib.Add(n - 1, Fib(n - 1));
+            if (!dpFib.ContainsKey(n - 2))
+                dpFib.Add(n - 2, Fib(n - 2));
+            return dpFib[n - 1] + dpFib[n - 2];
+        }
+        
+        private Dictionary<int, int> dpTribo = new Dictionary<int, int>();
+        public int Tribonacci(int n) // works
+        {
+            switch(n){
+                case 0:
+                    return 0;
+                case 1:
+                    return 1;
+                case 2:
+                    return 1;
+            }
+            if (!dpTribo.ContainsKey(n - 1))
+                dpTribo.Add(n - 1, Tribonacci(n - 1));
+            if (!dpTribo.ContainsKey(n - 2))
+                dpTribo.Add(n - 2, Tribonacci(n - 2));
+            if (!dpTribo.ContainsKey(n - 3))
+                dpTribo.Add(n - 3, Tribonacci(n - 3));
+            return dpTribo[n - 3] + dpTribo[n - 2] + dpTribo[n - 1];
+        }
+
+        private Dictionary<int, int> dpCS = new Dictionary<int, int>();
+        public int ClimbStairs(int n) // works
+        {
+            switch (n)
+            {
+                case 0:
+                case 1:
+                    return 1;
+            }
+            if (!dpCS.ContainsKey(n - 1))
+                dpCS.Add(n - 1, ClimbStairs(n - 1));
+            if (!dpCS.ContainsKey(n - 2))
+                dpCS.Add(n - 2, ClimbStairs(n - 2));
+            return dpCS[n - 1] + dpCS[n - 2];
+        }
+        
+        public int MinCostClimbingStairs(int[] cost) // WORKS
+        {
+            int[] dp = new int[cost.Length + 1];
+
+            for (int i = 2; i <= cost.Length; i++)
+                dp[i] = Math.Min(cost[i - 1] + dp[i - 1], cost[i - 2] + dp[i - 2]);
+
+            return dp[cost.Length];
+        }
+        
+        public int Rob(int[] nums) // works
+        {
+            int e = 0, o = 0;
+            
+            for(int i = 0; i < nums.Length; i++)
+            {
+                if(i % 2 == 0)
+                {
+                    e += nums[i];
+                    e = Math.Max(e, o);
+                }
+                else
+                {
+                    o +=nums[i];
+                    o = Math.Max(e, o);
+                }   
+            }
+            return Math.Max(e, o);
+        }
+        
     }
 }
