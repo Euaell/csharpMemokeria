@@ -2105,6 +2105,95 @@ namespace memokeria
             return count <= 1;
         }
         
+        public int[] SortArrayByParity(int[] nums) // works
+        {
+            return nums.Where(x => x % 2 == 0).Concat(nums.Where(x => x % 2 == 1)).ToArray();
+            int[] ret = new int[nums.Length];
+            int ind = 0;
+            
+            foreach (var t in nums)
+                if (t % 2 == 0) ret[ind++] = t;
+            foreach (var t in nums)
+                if (t % 2 != 0) ret[ind++] = t;
+            
+            return ret;
+        }
+        
+        public bool BackspaceCompare(string s, string t) // works
+        {
+            var sStk = new Stack<char>();
+            var tStk = new Stack<char>();
+            foreach (var va in s)
+            {
+                if (va == '#' && sStk.Count != 0) sStk.Pop();
+                else if (va != '#') sStk.Push(va);
+            }
+            foreach (var va in t)
+            {
+                if (va == '#' && tStk.Count != 0) tStk.Pop();
+                else if (va != '#') tStk.Push(va);
+            }
+
+            while (sStk.Count != 0 && tStk.Count != 0)
+            {
+                if (sStk.Pop() != tStk.Pop()) return false;
+            }
+
+            return tStk.Count == sStk.Count;
+        }
+        
+        public int MinOperations(string[] logs) // works
+        {
+            int count = 0;
+            foreach (var vs in logs)
+            {
+                switch (vs)
+                {
+                    case "../":
+                        count = count == 0 ? count : count - 1;
+                        break;
+                    case "./":
+                        continue;
+                    default:
+                        count++;
+                        break;
+                }
+            }
+
+            return count;
+        }
+        
+        public int CalPoints(string[] ops) // works
+        {
+            Stack<int> score = new Stack<int>();
+            foreach (var va in ops)
+            {
+                switch (va)
+                {
+                    case "D":
+                        score.Push(2 * score.Peek());
+                        break;
+                    case "C":
+                        score.Pop();
+                        break;
+                    case "+":
+                    {
+                        int f = score.Pop();
+                        int s = score.Pop();
+                        score.Push(s);
+                        score.Push(f);
+                        score.Push(f + s);
+                        break;
+                    }
+                    default:
+                        score.Push(int.Parse(va));
+                        break;
+                }
+            }
+
+            return score.Sum();
+        }
+        
         public int MissingNumber(int[] nums) // works
         {
             int sum = nums.Length * (nums.Length + 1) / 2;
@@ -2125,12 +2214,6 @@ namespace memokeria
                     incRet(ref ret);
 
             return ret;
-        }
-        
-        public int FindDuplicate(int[] nums) // doesn't work
-        {
-            int sum = nums.Length * (nums.Length - 1) / 2;
-            return nums.Sum() - sum;
         }
 
         public char FindTheDifference(string s, string t) // doesn't work
@@ -2306,7 +2389,7 @@ namespace memokeria
             }
             return nums[0] == target ? 0 : -1;
         }
-
+        
         // BINARY SEARCH TREE
         public TreeNode InsertIntoBST(TreeNode root, int val) // works
         {
@@ -2350,6 +2433,54 @@ namespace memokeria
             }
         }
         
+        public int CountNodes(TreeNode root) // works
+        {
+            if (root == null) return 0;
+            Queue<TreeNode> q = new Queue<TreeNode>();
+            q.Enqueue(root);
+            int count = 1;
+
+            while (q.Count != 0)
+            {
+                int size = q.Count;
+                count += size;
+                for (int i = 0; i < size; i++)
+                {
+                    var x = q.Dequeue();
+                    if (x.left != null) q.Enqueue(x.left);
+                    if (x.right != null) q.Enqueue(x.right);
+                }
+            }
+
+            return count;
+        }
+        
+        public int SingleNonDuplicate(int[] nums) // works
+        {
+            int left = 0;
+            int right = nums.Length - 1;
+            while (left < right){
+                int mid = left + (right - left) / 2;
+                if (mid % 2 == 1) mid--;
+            
+                if (nums[mid] != nums[mid + 1])
+                    right = mid;
+                else
+                    left = mid + 2;
+            }
+        
+            return nums[right];
+        }
+        
+        public int FindDuplicate(int[] nums) // works
+        {
+            Array.Sort(nums);
+            for (int i = 1; i < nums.Length; i++)
+                if (nums[i - 1] == nums[i]) return nums[i];
+            
+            return 0;
+        }
+
         // Greedy
         public int MaxDistance(int[] colors) // works
         {
@@ -2384,7 +2515,6 @@ namespace memokeria
 
             return arr;
         }
-        
         
         // Dynamic Programming
         private Dictionary<Tuple<int, int>, int> _winnerDp = new Dictionary<Tuple<int, int>, int>();

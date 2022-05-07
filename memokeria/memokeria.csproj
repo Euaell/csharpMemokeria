@@ -45,6 +45,7 @@
         <Compile Include="CircularDeque.cs" />
         <Compile Include="Grid.cs" />
         <Compile Include="HeapSort.cs" />
+        <Compile Include="MyStack.cs" />
         <Compile Include="Node.cs" />
         <Compile Include="Program.cs" />
         <Compile Include="Properties\AssemblyInfo.cs" />
