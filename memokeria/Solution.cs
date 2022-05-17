@@ -1,10 +1,62 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Diagnostics;
 using System.Linq;
+using System.Xml.Xsl;
 
 namespace memokeria
 {
+    public class MinStack // works
+    {
+        private Stack<int> _stack;
+        private Stack<int> _minStack;
+        public MinStack()
+        {
+            _stack = new Stack<int>();
+            _minStack = new Stack<int>();
+        }
+    
+        public void Push(int val) {
+            if (_minStack.Count == 0 || _minStack.Peek() >= val) 
+                _minStack.Push(val);
+            _stack.Push(val);
+        }
+    
+        public void Pop()
+        {
+            int x = _stack.Pop();
+            if (x == _minStack.Peek())
+                _minStack.Pop();
+        }
+    
+        public int Top()
+        {
+            return _stack.Peek();
+        }
+    
+        public int GetMin()
+        {
+            return _minStack.Peek();
+        }
+    }
+    
+    public class Node {
+        public int val;
+        public IList<Node> children;
+
+        public Node() {}
+
+        public Node(int _val) {
+            val = _val;
+        }
+
+        public Node(int _val,IList<Node> _children) {
+            val = _val;
+            children = _children;
+        }
+    }
+    
     public class ListNode {
         public int val;
         public ListNode next;
@@ -28,6 +80,71 @@ namespace memokeria
     }
     
     class Solution {
+        
+        public int EvalRPN(string[] tokens) // works
+        {
+            Stack<int> vals = new Stack<int>();
+            foreach (var va in tokens)
+            {
+                switch (va)
+                {
+                    case "*":
+                        vals.Push(vals.Pop() * vals.Pop());
+                        break;
+                    case "/":
+                        int y = vals.Pop();
+                        int x = vals.Pop();
+                        vals.Push(x / y);
+                        break;
+                    case "+":
+                        vals.Push(vals.Pop() + vals.Pop());
+                        break;
+                    case "-":
+                        int b = vals.Pop();
+                        int a = vals.Pop();
+                        vals.Push(a - b);
+                        break;
+                    default:
+                        vals.Push(int.Parse(va));
+                        break;
+                }
+            }
+
+            return vals.Peek();
+        }
+        
+        public IList<string> GenerateParenthesis(int n) // works
+        {
+            Stack<string> stack = new Stack<string>();
+            List<string> res = new List<string>();
+
+            void backTrack(int openN, int closedN)
+            {
+                if (openN == closedN && openN == n)
+                {
+                    string x = stack.Aggregate("", (current, va) => string.Concat(current, va));
+                    res.Add(x);
+                    return;
+                }
+
+                if (openN < n)
+                {
+                    stack.Push(")");
+                    backTrack(openN + 1, closedN);
+                    stack.Pop();
+                }
+
+                if (closedN < openN)
+                {
+                    stack.Push("(");
+                    backTrack(openN, closedN + 1);
+                    stack.Pop();
+                }
+            }
+            
+            backTrack(0, 0);
+            return res;
+        }
         
         public static void PrintColl<T>(IEnumerable<T> x) // prints any collections
         {
@@ -259,8 +376,74 @@ namespace memokeria
             return sMax;
         }
 
+        public bool IsValid(string s) // works
+        {
+            Stack<char> x = new Stack<char>();
+            foreach(var va in s)
+            {
+                if (va == '{' || va == '(' || va == '[') x.Push(va);
+                else
+                {
+                    if (x.Count == 0 ) return false;
+                    switch (va)
+                    {
+                        case '}' when x.Pop() != '{':
+                        case ')' when x.Pop() != '(':
+                        case ']' when x.Pop() != '[':
+                            return false;
+                    }
+                }
+            }
+            return x.Count == 0;
+        }
+        
+        public bool CanBeValid(string s, string locked) // doesn't work
+        {
+            int n = s.Length;
+            Stack<char> x = new Stack<char>();
+            
+            for (int i = 0; i < n; i++)
+            {
+                if (s[i] == '{' || s[i] == '(' || s[i] == '[') x.Push(s[i]);
+                else
+                {
+                    if (x.Count == 0)
+                    {
+                        if (locked[i] == 1)
+                            return false;
+                        if (s[i] == '}') x.Push('{');
+                        else if (s[i] == ')') x.Push('(');
+                        else if (s[i] == ']') x.Push('[');
+                    }
+                    if (s[i] == '}' && x.Peek() != '{')
+                    {
+                        if (locked[i] == 1)
+                            return false;
+                        x.Push('{');
+                    }
+                    else if (s[i] == ']' && x.Peek() != '[')
+                    {
+                        if (locked[i] == 1)
+                            return false;
+                        x.Push('[');
+                    }
+                    else if (s[i] == ')' && x.Peek() != '(')
+                    {
+                        if (locked[i] == 1)
+                            return false;
+                        x.Push('(');
+                    }
+                    else
+                    {
+                        x.Pop();
+                    }
+                }
+            }
 
-        private bool isvalid(int row, int col, char[][] board) 
+            return x.Count == 0;
+        }
+        
+        private bool IsvalidS(int row, int col, char[][] board) 
         {
             HashSet<char> exi = new HashSet<char>();
             // check horizontal
@@ -304,7 +487,7 @@ namespace memokeria
         {
             for (int i = 0; i < 9; i += 3)
             for (int j = 0; j < 9; j += 3)
-                    if (!isvalid(i, j, board)) return false;
+                    if (!IsvalidS(i, j, board)) return false;
             return true;
         }
         
@@ -763,40 +946,7 @@ namespace memokeria
             // PrintColl(uglyNo);
             return uglyNo;
         }
-        
-        public bool SearchMatrix(int[][] matrix, int target) // works
-        {
-            foreach (var rw in matrix)
-            {
-                int left = 0;
-                int right = rw.Length - 1;
-                int mid = 0;
-                while (left <= right)
-                {
-                    mid = (left + right) / 2;
-                    if (rw[mid] < target)
-                        left = mid + 1;
-                    if (rw[mid] > target)
-                        right = mid - 1;
-                    if (rw[mid] == target)
-                        break;
-                }
 
-                if (rw[mid] == target) return true;
-            }
-
-            return false;
-        }
-        
-        public bool SearchMatrixII(int[][] matrix, int target) // works
-        {
-            foreach (var t in matrix)
-                foreach (var va in t)
-                        if (va == target) return true;
-
-            return false;
-        }
-        
         public int DominantIndex(int[] nums) // works
         {
             int max = nums[0];
@@ -862,30 +1012,296 @@ namespace memokeria
             
         }
         
-        public int[][] KClosest(int[][] points, int k)
+        public int[] GetStrongest(int[] arr, int k) // works
         {
-            List<int[]> x = points.ToList();
-            int[][] ret = new int[k][];
-            for (int i = 0; i < points.Length; i++)
+            if (arr.Length == 1) return arr;
+            
+            Array.Sort(arr);
+
+            int median = arr[(arr.Length - 1) / 2];
+
+            List<int> ret = new List<int>(k);
+            int left = 0;
+            int right = arr.Length - 1;
+            while (k > 0)
             {
-                double pDis = Math.Pow(points[i][0], 2) + Math.Pow(points[i][1], 2);
-                for (int j = i + 1; j < points.Length; j++)
-                {
-                    double sDis = Math.Pow(points[j][0], 2) + Math.Pow(points[j][1], 2);
-                    if (pDis > sDis)
-                    {
-                        (points[i], points[j]) = (points[j], points[i]);
-                        // int[] temp = points[i];
-                        // points[i] = points[j];
-                        // points[j] = temp;
-                        break;
-                    }
-                }
+                int t1 = Math.Abs(arr[left] - median);
+                int t2 = Math.Abs(arr[right] - median);
+                ret.Add(t1 > t2 ? arr[left++] : arr[right--]);
+                k--;
             }
 
-            for (int i = 0; i < ret.Length; i++)
-                ret[i] = points[i];
+            return ret.ToArray();
+        }
+        
+        public void ReverseString(char[] s) // works
+        {
+            int left = 0;
+            int right = s.Length - 1;
+            while (left < right){
+                (s[left], s[right]) = (s[right--], s[left++]);
+            }
+        }
+
+        private string reverse(string x)
+        {
+            string ret = "";
+            for (int i = x.Length - 1; i >= 0; i--)
+                ret = string.Concat(ret, x[i]);
+
+            return ret;
+        }
+        private string to_string(List<string> x)
+        {
+            return x.Aggregate("", (current, vs) => string.Concat(current, vs + " ")).TrimEnd(' ');
+        }
+        public string ReverseWords(string s) // works
+        {
+            List<string> x = s.Split(' ').Select(reverse).ToList();
+
+            return to_string(x);
+        }
+        
+        private double dist(int x, int y)
+        {
+            return Math.Sqrt(x * x + y * y);
+        }
+        public int[][] KClosest(int[][] points, int k) // works
+        {
+            Dictionary<int[], double> u = new Dictionary<int[], double>();
+            foreach (var va in points)
+            {
+                var (f, s) = (va[0], va[1]);
+                if (!u.ContainsKey(new []{f, s})) u.Add(new []{f, s}, dist(f, s));
+            }
             
+            return u.OrderBy(pair => pair.Value).Take(k).ToDictionary(pair => pair.Key, pair => pair.Value).Keys.ToArray();
+        }
+        
+        public IList<int> InorderTraversal(TreeNode root) // works
+        {
+            List<int> IOT = new List<int>();
+
+            void rec(TreeNode root)
+            {
+                if (root == null) return;
+                rec(root.left);
+                IOT.Add(root.val);
+                rec(root.right);
+            }
+
+            return IOT;
+        }
+        
+        public IList<int> PreorderTraversal(TreeNode root) // works
+        {
+            List<int> POT = new List<int>();
+
+            void rec(TreeNode root)
+            {
+                if (root == null) return;
+                POT.Add(root.val);
+                rec(root.left);
+                rec(root.right);
+            }
+        
+            rec(root);
+        
+            return POT;
+        }
+        
+        public IList<int> PostorderTraversal(TreeNode root) // works
+        {
+            List<int> POT = new List<int>();
+
+            void rec(TreeNode root)
+            {
+                if (root == null) return;
+                rec(root.left);
+                rec(root.right);
+                POT.Add(root.val);
+            }
+        
+            rec(root);
+        
+            return POT;
+        }
+        
+        public IList<int> Preorder(Node root) // works
+        {
+            List<int> POT = new List<int>();
+
+            void rec(Node root)
+            {
+                if (root == null) return;
+                POT.Add(root.val);
+                foreach (var va in root.children)
+                    rec(va);
+            }
+
+            rec(root);
+
+            return POT;
+        }
+        
+        public IList<int> Postorder(Node root) // works
+        {
+            List<int> POT = new List<int>();
+
+            void rec(Node root)
+            {
+                if (root == null) return;
+                foreach (var va in root.children)
+                    rec(va);
+                
+                POT.Add(root.val);
+            }
+
+            rec(root);
+
+            return POT;
+        }
+        
+        private List<int> GMD = new List<int>();
+
+        private void Inorder(TreeNode root)
+        {
+            if (root == null) return;
+            
+            Inorder(root.left);
+            GMD.Add(root.val);
+            Inorder(root.right);
+        }
+        public int GetMinimumDifference(TreeNode root) // works
+        {
+            Inorder(root);
+            GMD.Sort();
+            int min = int.MaxValue;
+            for (int i = 1; i < GMD.Count; i++)
+            {
+                var x = Math.Abs(GMD[i - 1] - GMD[i]);
+                if (min > x)
+                    min = x;
+            }
+
+            return min;
+        }
+        
+        public int MinDiffInBST(TreeNode root)
+        {
+            return GetMinimumDifference(root);
+        }
+        
+        private bool isValid(IList<int> list)
+        {
+            for (int i = 1; i < list.Count; i++)
+                if (list[i] <= list[i - 1]) return false;
+
+            return true;
+        }
+        public bool IsValidBST(TreeNode root) // works
+        {
+            List<int> IOT = new List<int>();
+
+            void rec(TreeNode root)
+            {
+                if (root == null) return;
+                rec(root.left);
+                IOT.Add(root.val);
+                rec(root.right);
+            }
+            rec(root);
+            foreach(var v in IOT)
+                Console.Write($" {v} ");
+                
+            return isValid(IOT);
+        }
+        
+        public int[] FindMode(TreeNode root) // works
+        {
+            List<int> IOT = new List<int>();
+
+            void rec(TreeNode r)
+            {
+                if (r == null) return;
+                rec(r.left);
+                IOT.Add(r.val);
+                rec(r.right);
+            }
+            rec(root);
+
+            Dictionary<int, int> freq = new Dictionary<int, int>();
+            foreach (var v in IOT)
+            {
+                if (freq.ContainsKey(v)) freq.Add(v, 0);
+                freq[v]++;
+            }
+            
+            int max = freq.Values.Max();
+
+            return (from v in freq where v.Value == max select v.Key).ToArray();
+        }
+        
+        public bool IsUnivalTree(TreeNode root) // works
+        {
+            int val = root.val;
+
+            bool rec(TreeNode root)
+            {
+                if (root == null) return true;
+                bool l = rec(root.left);
+                bool r = rec(root.right);
+                return root.val == val && l && r;
+            }
+
+            return rec(root);
+        }
+        
+        public int[][] UpdateMatrix(int[][] mat)
+        {
+            int n = mat.Length;
+            int m = mat[0].Length;
+            (int, int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
+
+            bool isValid((int, int) point)
+            {
+                var (x, y) = point;
+                return x >= 0 && x < n && y < m && y >= 0;
+            }
+
+            int bfs((int, int) point)
+            {
+                (int r, int c) = point;
+                Queue<(int, int)> que = new Queue<(int, int)>();
+                HashSet<(int, int)> visited = new HashSet<(int, int)>();
+                que.Enqueue(point);
+                int count = 0;
+                while (que.Count != 0)
+                {
+                    int size = que.Count;
+                    for (int i = 0; i < size; i++)
+                    {
+                        var (x, y) = que.Dequeue();
+                        visited.Add((x, y));
+                        if (mat[x][y] == 0) return count;
+                    }
+
+                    foreach (var (r1,c1) in direction)
+                        if (isValid((r + r1, c + c1)) && !visited.Contains((r + r1, c + c1))) que.Enqueue((r + r1, c + c1));
+
+                    count++;
+                }
+                return count;
+            }
+            
+            int[][] ret = new int[n][];
+            
+            for (int i = 0; i < n; i++)
+            {
+                ret[i] = new int[m];
+                for (int j = 0; j < m; j++)
+                    ret[i][j] = mat[i][j] == 0 ? 0 : bfs((i, j));
+            }
 
             return ret;
         }
@@ -2390,7 +2806,7 @@ namespace memokeria
             return nums[0] == target ? 0 : -1;
         }
         
-        // BINARY SEARCH TREE
+       // BINARY SEARCH TREE
         public TreeNode InsertIntoBST(TreeNode root, int val) // works
         {
             if (root == null)
@@ -2481,6 +2897,40 @@ namespace memokeria
             return 0;
         }
 
+        public bool SearchMatrix(int[][] matrix, int target) // works
+        {
+            foreach (var rw in matrix)
+            {
+                int left = 0;
+                int right = rw.Length - 1;
+                int mid = 0;
+                while (left <= right)
+                {
+                    mid = (left + right) / 2;
+                    if (rw[mid] < target)
+                        left = mid + 1;
+                    if (rw[mid] > target)
+                        right = mid - 1;
+                    if (rw[mid] == target)
+                        break;
+                }
+
+                if (rw[mid] == target) return true;
+            }
+
+            return false;
+        }
+        
+        public bool SearchMatrixII(int[][] matrix, int target) // works
+        {
+            foreach (var t in matrix)
+                foreach (var va in t)
+                    if (va == target) return true;
+
+            return false;
+        }
+      
+        
         // Greedy
         public int MaxDistance(int[] colors) // works
         {
