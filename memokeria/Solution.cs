@@ -2806,132 +2806,7 @@ namespace memokeria
             return nums[0] == target ? 0 : -1;
         }
         
-       // BINARY SEARCH TREE
-        public TreeNode InsertIntoBST(TreeNode root, int val) // works
-        {
-            if (root == null)
-                return new TreeNode(val);
-            if (root.val > val)
-            {
-                // go to left
-                if (root.left == null)
-                    root.left = new TreeNode(val);
-                else
-                    InsertIntoBST(root.left, val);
-            }
-            else
-            {
-                // go to right
-                if (root.right == null)
-                    root.right = new TreeNode(val);
-                else
-                    InsertIntoBST(root.right, val);
-            }
-
-            return root;
-        }
-
-        public TreeNode SearchBST(TreeNode root, int val) // works
-        {
-            while (true)
-            {
-                if (root == null) return null;
-
-                if (root.val > val)
-                {
-                    root = root.left;
-                    continue;
-                }
-
-                if (root.val == val) return root;
-                
-                root = root.right;
-            }
-        }
-        
-        public int CountNodes(TreeNode root) // works
-        {
-            if (root == null) return 0;
-            Queue<TreeNode> q = new Queue<TreeNode>();
-            q.Enqueue(root);
-            int count = 1;
-
-            while (q.Count != 0)
-            {
-                int size = q.Count;
-                count += size;
-                for (int i = 0; i < size; i++)
-                {
-                    var x = q.Dequeue();
-                    if (x.left != null) q.Enqueue(x.left);
-                    if (x.right != null) q.Enqueue(x.right);
-                }
-            }
-
-            return count;
-        }
-        
-        public int SingleNonDuplicate(int[] nums) // works
-        {
-            int left = 0;
-            int right = nums.Length - 1;
-            while (left < right){
-                int mid = left + (right - left) / 2;
-                if (mid % 2 == 1) mid--;
-            
-                if (nums[mid] != nums[mid + 1])
-                    right = mid;
-                else
-                    left = mid + 2;
-            }
-        
-            return nums[right];
-        }
-        
-        public int FindDuplicate(int[] nums) // works
-        {
-            Array.Sort(nums);
-            for (int i = 1; i < nums.Length; i++)
-                if (nums[i - 1] == nums[i]) return nums[i];
-            
-            return 0;
-        }
-
-        public bool SearchMatrix(int[][] matrix, int target) // works
-        {
-            foreach (var rw in matrix)
-            {
-                int left = 0;
-                int right = rw.Length - 1;
-                int mid = 0;
-                while (left <= right)
-                {
-                    mid = (left + right) / 2;
-                    if (rw[mid] < target)
-                        left = mid + 1;
-                    if (rw[mid] > target)
-                        right = mid - 1;
-                    if (rw[mid] == target)
-                        break;
-                }
-
-                if (rw[mid] == target) return true;
-            }
-
-            return false;
-        }
-        
-        public bool SearchMatrixII(int[][] matrix, int target) // works
-        {
-            foreach (var t in matrix)
-                foreach (var va in t)
-                    if (va == target) return true;
-
-            return false;
-        }
-      
-        
-        // Greedy
+       // Greedy
         public int MaxDistance(int[] colors) // works
         {
             int max = 0;
@@ -3069,5 +2944,31 @@ namespace memokeria
             return Math.Max(e, o);
         }
         
+        
+        // sliding window
+        public int LengthOfLongestSubstring(string s) // doesn't work
+        {
+            int max = 0;
+            int currMax = 0;
+
+            Dictionary<char, int> x = new Dictionary<char, int>();
+            for (int i = 0; i < s.Length; i++)
+            {
+                currMax = 1;
+                int j = i;
+                x.Add(s[i], i);
+                while (!x.ContainsKey(s[j]) && j++ < s.Length)
+                {
+                    currMax++;
+                    x.Add(s[j], j);
+                }
+                
+                max = Math.Max(currMax, max);
+                i = x[s[j]] + 1;
+                x.Clear();
+            }
+            
+            return max;
+        }
     }
 }
