@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Data;
 using System.Diagnostics;
@@ -1078,6 +1079,104 @@ namespace memokeria
             return u.OrderBy(pair => pair.Value).Take(k).ToDictionary(pair => pair.Key, pair => pair.Value).Keys.ToArray();
         }
         
+        public int KthSmallest(int[][] matrix, int k) // works
+        {
+            List<int> ret = matrix.SelectMany(vr => vr).ToList();
+            ret.Sort();
+            
+            return ret[k - 1];
+        }
+        
+        public IList<IList<int>> KSmallestPairs(int[] nums1, int[] nums2, int k)
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+
+            int i = 0;
+            int j = 0;
+            while (i < nums1.Length && j < nums2.Length && k-- > 0)
+            {
+                ret.Add(new List<int>{nums1[i], nums2[j]});
+                if (nums1[i + 1] < nums2[j + 1]) i++;
+                // else 
+            }
+            
+            return ret;
+        }
+        
+        public int[] PlusOne(int[] digits) // works
+        {
+            int carry = 1;
+            List<int> ret = new List<int>();
+            for (int i = digits.Length - 1; i >= 0; i--)
+            {
+                int t = digits[i] + carry;
+                digits[i] = t % 10;
+                ret.Add(digits[i]);
+                carry = t / 10;
+                if (carry == 0) return digits;
+            }
+            if (carry > 0) ret.Add(carry);
+            
+            ret.Reverse();
+            return ret.ToArray();
+        }
+        
+        public int CountServers(int[][] grid)
+        {
+            int n = grid.Length;
+            int m = grid[0].Length;
+            HashSet<(int, int)?> visited = new HashSet<(int, int)?>();
+            
+            int count = 0;
+            for (int i = 0; i < n; i++)
+            {
+                int temp = 0;
+                (int, int)? first = null;
+                for (int j = 0; j < m; j++)
+                {
+                    if (grid[i][j] != 1) continue;
+                    if (first == null)
+                        first = (i, j);
+                    else if (!visited.Contains((i, j)))
+                    {
+                        visited.Add((i, j));
+                        temp++;
+                    }
+                }
+                if (first != null && !visited.Contains(first) && temp > 0)
+                {
+                    visited.Add(first);
+                    temp++;
+                }
+                count += temp;
+            }
+
+            for (int j = 0; j < m; j++)
+            {
+                int temp = 0;
+                (int, int)? first = null;
+                for (int i = 0; i < n; i++)
+                {
+                    if (grid[i][j] != 1) continue;
+                    if (first == null)
+                        first = (i, j);
+                    else if (!visited.Contains((i, j)))
+                    {
+                        visited.Add((i, j));
+                        temp++;
+                    }
+                }
+                if (first != null && !visited.Contains(first) && temp > 0)
+                {
+                    visited.Add(first);
+                    temp++;
+                }
+                count += temp;
+            }
+           
+            return count;
+        }
+        
         public IList<int> InorderTraversal(TreeNode root) // works
         {
             List<int> IOT = new List<int>();
@@ -1163,7 +1262,6 @@ namespace memokeria
         }
         
         private List<int> GMD = new List<int>();
-
         private void Inorder(TreeNode root)
         {
             if (root == null) return;
@@ -1255,55 +1353,6 @@ namespace memokeria
             }
 
             return rec(root);
-        }
-        
-        public int[][] UpdateMatrix(int[][] mat)
-        {
-            int n = mat.Length;
-            int m = mat[0].Length;
-            (int, int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
-
-            bool isValid((int, int) point)
-            {
-                var (x, y) = point;
-                return x >= 0 && x < n && y < m && y >= 0;
-            }
-
-            int bfs((int, int) point)
-            {
-                (int r, int c) = point;
-                Queue<(int, int)> que = new Queue<(int, int)>();
-                HashSet<(int, int)> visited = new HashSet<(int, int)>();
-                que.Enqueue(point);
-                int count = 0;
-                while (que.Count != 0)
-                {
-                    int size = que.Count;
-                    for (int i = 0; i < size; i++)
-                    {
-                        var (x, y) = que.Dequeue();
-                        visited.Add((x, y));
-                        if (mat[x][y] == 0) return count;
-                    }
-
-                    foreach (var (r1,c1) in direction)
-                        if (isValid((r + r1, c + c1)) && !visited.Contains((r + r1, c + c1))) que.Enqueue((r + r1, c + c1));
-
-                    count++;
-                }
-                return count;
-            }
-            
-            int[][] ret = new int[n][];
-            
-            for (int i = 0; i < n; i++)
-            {
-                ret[i] = new int[m];
-                for (int j = 0; j < m; j++)
-                    ret[i][j] = mat[i][j] == 0 ? 0 : bfs((i, j));
-            }
-
-            return ret;
         }
         
         public int MostWordsFound(string[] sentences) // very easy
@@ -1965,27 +2014,7 @@ namespace memokeria
             }
             return prev;
         }
-        
-        public ListNode ReverseBetween(ListNode head, int left, int right) //??
-        {
-            ListNode currNode = head.next;
-            ListNode prevNode = head;
-            // ListNode nextNode = head.next;
-            int count = right - left;
-            while (currNode != null)
-            {
-                left--;
-                if (left == 0)
-                {
-                    
-                }
-                
-                currNode = currNode.next;
-            }
 
-            return null;
-        }
-        
         public int NumComponents(ListNode head, int[] nums) //works
         {
             HashSet<int> x = nums.ToHashSet();
@@ -2294,39 +2323,6 @@ namespace memokeria
             return counter;
         }
         
-        public int MySqrt(int x) //works 
-        {
-            long left = 1;
-            long right = x;
-            while (left < right){
-                int mid = (int)(left + (right - left) / 2);
-                long squr = (long)mid * mid;
-                // Console.WriteLine($"Left: {left} Right: {right}");
-                if (squr == x)
-                    return mid;
-                if (squr < x)
-                    left = mid + 1;
-                else
-                    right = mid - 1;
-            }
-            if (left == right)
-                return left * left > x ? (int)left - 1 : (int)left;
-            
-            return (int)right;
-        }
-        
-        public int FindTheDistanceValue(int[] arr1, int[] arr2, int d) // works
-        {
-            int count = 0;
-            foreach(var va in arr1)
-            {
-                if (arr2.Any(vb => Math.Abs(va - vb) <= d))
-                    count--;
-                count++;
-            }
-            return count;
-        }
-
         private int[] digitize(int n)
         {
             int[] digits = new int[10];
@@ -2772,41 +2768,8 @@ namespace memokeria
             }
             return ret;
         }
-        
-        public int Search(int[] nums, int target) // works
-        {
-            int left = 1;
-            int right = nums.Length - 1;
-        
-            while (left <= right){
-                int mid = (left + right) / 2;
-                // left side
-                if (nums[mid - 1] < nums[mid])
-                    left = mid + 1;
-                // right side
-                if (nums[mid - 1] > nums[mid])
-                    right = mid - 1;
-            }
 
-            if (target < nums[0])
-                right = nums.Length - 1;
-            else
-                left = 0;
-
-            while (left <= right)
-            {
-                int mid = (left + right) / 2;
-                if (nums[mid] > target)
-                    right = mid - 1;
-                if (nums[mid] < target)
-                    left = mid + 1;
-                if (nums[mid] == target)
-                    return mid;
-            }
-            return nums[0] == target ? 0 : -1;
-        }
-        
-       // Greedy
+        // Greedy
         public int MaxDistance(int[] colors) // works
         {
             int max = 0;
@@ -2944,31 +2907,867 @@ namespace memokeria
             return Math.Max(e, o);
         }
         
-        
-        // sliding window
-        public int LengthOfLongestSubstring(string s) // doesn't work
+        public int UniquePaths(int m, int n) // works
         {
-            int max = 0;
-            int currMax = 0;
-
-            Dictionary<char, int> x = new Dictionary<char, int>();
-            for (int i = 0; i < s.Length; i++)
+            Dictionary<(int, int), int> dp = new Dictionary<(int, int), int>();
+            int rec(int row, int col)
             {
-                currMax = 1;
-                int j = i;
-                x.Add(s[i], i);
-                while (!x.ContainsKey(s[j]) && j++ < s.Length)
+                if (!dp.ContainsKey((row, col)))
                 {
-                    currMax++;
-                    x.Add(s[j], j);
+                    if (row == n - 1 && col == m - 1) return 1;
+                    int right = 0;
+                    int down = 0;
+                    if (row + 1 < n) right = rec(row + 1, col);
+                    if (col + 1 < m) down = rec(row, col + 1);
+                    dp.Add((row, col), right + down);
                 }
-                
-                max = Math.Max(currMax, max);
-                i = x[s[j]] + 1;
-                x.Clear();
+
+                return dp[(row, col)];
+            }
+
+            return rec(0, 0);
+        }
+        
+        public int UniquePathsWithObstacles(int[][] obstacleGrid) // works
+        {
+            int n = obstacleGrid.Length;
+            int m = obstacleGrid[0].Length;
+            Dictionary<(int, int), int> dp = new Dictionary<(int, int), int>();
+            int rec(int row, int col)
+            {
+                if (!dp.ContainsKey((row, col)))
+                {
+                    if (obstacleGrid[row][col] == 1) return 0;
+                    if (row == n - 1 && col == m - 1) return 1;
+                    int right = 0;
+                    int down = 0;
+                    if (row + 1 < n) right = rec(row + 1, col);
+                    if (col + 1 < m) down = rec(row, col + 1);
+                    dp.Add((row, col), right + down);
+                }
+
+                return dp[(row, col)];
+            }
+
+            return rec(0, 0);
+        }
+        
+        public int MinPathSum(int[][] grid) //works
+        {
+            int n = grid.Length;
+            int m = grid[0].Length;
+            Dictionary<(int, int), int> dp = new Dictionary<(int, int), int>();
+
+            int rec(int row, int col)
+            {
+                if (row == n - 1 && col == m - 1) return grid[row][col];
+
+                if (!dp.ContainsKey((row, col)))
+                {
+                    int right = int.MaxValue;
+                    int down = int.MaxValue;
+                    if (row + 1 < n) right = rec(row + 1, col);
+                    if (col + 1 < m) down = rec(row, col + 1);
+                    dp.Add((row, col) ,grid[row][col] + Math.Min(right, down));
+                }
+
+                return dp[(row, col)];
+            }
+
+            return rec(0, 0);
+        }
+        
+        public int CoinChange(int[] coins, int amount) // works
+        {
+            Dictionary<int, long> dp = new Dictionary<int, long>();
+            long rec (int a){
+                if (a < 0) return int.MaxValue;
+                if (a == 0) return 0;
+
+                if (!dp.ContainsKey(a)){
+                    long x = int.MaxValue;
+                    foreach (var coin in coins)
+                    {
+                        long t = Math.Min(x, 1 + rec(a - coin));
+                        x = t > 0 ? t : x;
+                    }
+                    dp.Add(a, x);
+                }
+            
+                return dp[a];
+            }
+
+            int ans = (int) rec(amount);
+            return ans == int.MaxValue ? -1 : ans;
+        }
+
+        public int[][] UpdateMatrix(int[][] mat)
+        {
+            int n = mat.Length;
+            int m = mat[0].Length;
+            (int, int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
+            Dictionary<(int, int), int> dict = new Dictionary<(int, int), int>();
+            
+            bool isValid((int, int) p)
+            {
+                return p.Item1 >= 0 && p.Item1 < n && p.Item2 >= 0 && p.Item2 < m;
             }
             
+            int rec(int i, int j)
+            {
+                int min = int.MaxValue;
+                if (dict.ContainsKey((i, j))) return dict[(i, j)];
+                if (mat[i][j] == 0)
+                    min = 0;
+                else
+                {
+                    foreach (var (r, c) in direction)
+                    {
+                        int t = 0;
+                        if (isValid((i + r, j + c))) t = 1 + rec(i + r, j + c);
+                        min = Math.Min(min, t);
+                    }
+                }
+
+                dict.Add((i, j), min);
+
+                return dict[(i, j)];
+            }
+
+            int[][] ret = new int[n][];
+            for (int i = 0; i < n; i++)
+            {
+                ret[i] = new int[m];
+                for (int j = 0; j < m; j++)
+                {
+                    ret[i][j] = rec(i, j);
+                }
+            }
+
+            return ret;
+        }
+
+        // binary search
+        
+        public int Search(int[] nums, int target) // works
+        {
+            int left = 0;
+            int right = nums.Length - 1;
+            while(left <= right){
+                int index = ((right + left) / 2);
+                if (nums[index] == target)
+                    return index;
+                if (nums[index] > target)
+                    right = index - 1;
+                if (nums[index] < target)
+                    left = index + 1;
+            }
+            return -1;
+        }
+
+        private int guess(int x){return 0;}
+        public int GuessNumber(int n) // works
+        {
+            int left = 1;
+            int right = n;
+            int mid = left + (right - left) / 2;
+            int g = guess(mid);
+            while(g != 0){
+                mid = left + (right - left) / 2;
+                g = guess(mid);
+                if (g == -1)
+                    right = mid - 1;
+                if (g == 1)
+                    left = mid + 1;
+            }
+            return mid;
+        }
+        
+        public int MySqrt(int x) //works 
+        {
+            long left = 1;
+            long right = x;
+            while (left < right){
+                int mid = (int)(left + (right - left) / 2);
+                long squr = (long)mid * mid;
+                // Console.WriteLine($"Left: {left} Right: {right}");
+                if (squr == x)
+                    return mid;
+                if (squr < x)
+                    left = mid + 1;
+                else
+                    right = mid - 1;
+            }
+            if (left == right)
+                return left * left > x ? (int)left - 1 : (int)left;
+            
+            return (int)right;
+        }
+        
+        // dfs
+        // Given the root of a binary tree and an integer targetSum, return true if the tree has a root-to-leaf path such that adding up all the values along the path equals targetSum.
+        public bool HasPathSum(TreeNode root, int targetSum) // works
+        {
+            if (root == null) return false;
+            if (root.left == null && root.right == null)
+                return targetSum == root.val;
+            return HasPathSum(root.left, targetSum - root.val) || HasPathSum(root.right, targetSum - root.val);
+        }
+        
+        public IList<IList<int>> FindDifference(int[] nums1, int[] nums2) // works
+        {
+            HashSet<int> x = nums1.ToHashSet();
+            HashSet<int> y = nums2.ToHashSet();
+
+            IList<IList<int>> ret = new List<IList<int>>();
+            
+            ret.Add(new List<int>());
+            foreach (var num in x.Where(num => !y.Contains(num)))
+                ret[0].Add(num);
+            
+            ret.Add(new List<int>());
+            foreach (var num in y.Where(num => !x.Contains(num)))
+                ret[1].Add(num);
+
+            return ret;
+        }      
+        
+        public int[] Intersection(int[] nums1, int[] nums2) // works
+        {
+            HashSet<int> x = nums1.ToHashSet();
+            HashSet<int> ret = new HashSet<int>();
+            
+            foreach (var va in nums2)
+                if (x.Contains(va) && !ret.Contains(va)) ret.Add(va);
+
+            return ret.ToArray();
+        }
+        
+        public string Multiply(string num1, string num2) {
+            
+            if (num1 == "0" || num2 == "0") return "0";
+            int n = num1.Length;
+            int m = num2.Length;
+            List<char> xChars = new List<char>();
+            
+            for (int i = 0; i < n + m; i++)
+                xChars.Add('0');
+            
+            for (int i = 0; i < num2.Length; i++)
+            {
+                
+            }
+
+            return string.Join("", xChars);
+        }
+
+        public string AddBinary(string a, string b) // works
+        {
+            int n = a.Length;
+            int m = b.Length;
+            List<char> xChars = new List<char>();
+            
+            for (int i = 0; i < n + m; i++)
+                xChars.Add('0');
+
+            string num3 = string.Join("", a.Reverse());
+            string num4 = string.Join("", b.Reverse());
+
+            int index = 0;
+            int carry = 0;
+            while (index < num3.Length && index < num4.Length)
+            {
+                int mul = int.Parse(num3[index].ToString()) + int.Parse(num4[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 2 + '0');
+                carry = mul / 2;
+                index++;
+            }
+            
+            while (index < num3.Length)
+            {
+                int mul = int.Parse(num3[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 2 + '0');
+                carry = mul / 2;
+                index++;
+            }
+            while (index < num4.Length)
+            {
+                int mul = int.Parse(num4[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 2 + '0');
+                carry = mul / 2;
+                index++;
+            }
+            if (carry > 0)
+                xChars[index] = (char)(carry + '0');
+
+            xChars.Reverse();
+            string ret = string.Join("", xChars).TrimStart('0');
+            return ret == "" ? "0" : ret;
+        }
+
+        public IList<int> AddToArrayForm(int[] num, int k) // works
+        {
+            List<int> ret = new List<int>();
+            int carry = k;
+            for (int i = num.Length - 1; i >= 0; i--)
+            {
+                int sum = num[i] + carry;
+                ret.Add(sum % 10);
+                carry = sum / 10;
+            }
+
+            while (carry > 0)
+            {
+                ret.Add(carry % 10);
+                carry /= 10;
+            }
+
+            ret.Reverse();
+            return ret;
+        }
+        
+        public string AddStrings(string num1, string num2) // works
+        {
+            if (num1 == "0") return num2;
+            if (num2 == "0") return num1;
+            int n = num1.Length;
+            int m = num2.Length;
+            List<char> xChars = new List<char>();
+            
+            for (int i = 0; i < n + m; i++)
+                xChars.Add('0');
+
+            string num3 = string.Join("", num1.Reverse());
+            string num4 = string.Join("", num2.Reverse());
+
+            int index = 0;
+            int carry = 0;
+            while (index < num3.Length && index < num4.Length)
+            {
+                int mul = int.Parse(num3[index].ToString()) + int.Parse(num4[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 10 + '0');
+                carry = mul / 10;
+                index++;
+            }
+            
+            while (index < num3.Length)
+            {
+                int mul = int.Parse(num3[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 10 + '0');
+                carry = mul / 10;
+                index++;
+            }
+            while (index < num4.Length)
+            {
+                int mul = int.Parse(num4[index].ToString()) + carry;
+                xChars[index] = (char)(mul % 10 + '0');
+                carry = mul / 10;
+                index++;
+            }
+            if (carry > 0)
+                xChars[index] = (char)(carry + '0');
+
+            xChars.Reverse();
+            string ret = string.Join("", xChars).TrimStart('0');
+            return ret == "" ? "0" : ret;
+        }
+        
+        public IList<int> Intersection(int[][] nums) // works
+        {
+            HashSet<int> x = nums[0].ToHashSet();
+
+            foreach (var VARIABLE in nums)
+            {
+                HashSet<int> y = VARIABLE.ToHashSet();
+                x.IntersectWith(y);
+            }
+
+            List<int> ret = x.ToList();
+            ret.Sort();
+            return ret;
+        }
+        
+        public int[] Intersect(int[] nums1, int[] nums2)
+        {
+            List<int> ret = new List<int>();
+            Array.Sort(nums1);
+            Array.Sort(nums2);
+            int l = nums1.Length < nums2.Length ? nums1.Length : nums2.Length;
+            for (int i = 0, j = 0; i < l; i++)
+            {
+                if (nums1[i] == nums2[j])
+                {
+                    ret.Add(nums1[i]);
+                    j++;
+                }
+                else if (nums1[i] < nums2[j])
+                    i++;
+                else
+                    j++;
+            }
+
+            return ret.ToArray();
+        }
+
+
+        private Dictionary<string, List<string>> let = new Dictionary<string, List<string>>
+        {
+            {"2", new List<string> {"a", "b", "c"}},
+            {"3", new List<string> {"d", "e", "f"}},
+            {"4", new List<string> {"g", "h", "i"}},
+            {"5", new List<string> {"j", "k", "l"}},
+            {"6", new List<string> {"m", "n", "o"}},
+            {"7", new List<string> {"p", "q", "r", "s"}},
+            {"8", new List<string> {"t", "u", "v"}},
+            {"9", new List<string> {"w", "x", "y", "z"}}
+        };
+        public IList<string> LetterCombinations(string digits) // works
+        {
+            IList<string> ret = new List<string>();
+            
+            void rec (int index, string curr)
+            {
+                if (index == digits.Length)
+                {
+                    ret.Add(curr);
+                    return;
+                }
+                foreach (var va in let[digits[index].ToString()])
+                    rec(index + 1, curr + va);
+            }
+            rec(0, "");
+            return ret;
+        }
+
+        public IList<IList<int>> AllPathsSourceTarget(int[][] graph) // works
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+            
+            void rec (int index, List<int> curr)
+            {
+                if (index == graph.Length - 1)
+                {
+                    ret.Add(curr);
+                    return;
+                }
+                foreach (var va in graph[index])
+                    rec(va, new List<int>(curr) {va});
+            }
+            
+            rec(0, new List<int> {0});
+            return ret;
+        }
+        
+        public int CountPaths(int n, int[][] roads)
+        {
+            Dictionary<int, List< (int, int)>> adjList = new Dictionary<int, List<(int, int)>>();
+            foreach (var tr in roads)
+            {
+                if (!adjList.ContainsKey(tr[0]))
+                    adjList.Add(tr[0], new List<(int, int)> ());
+                adjList[tr[0]].Add((tr[1], tr[2]));
+                if (!adjList.ContainsKey(tr[1]))
+                    adjList.Add(tr[1], new List<(int, int)> ());
+                adjList[tr[1]].Add((tr[0], tr[2]));
+            }
+
+            return 0;
+        }
+        
+        public int[] TwoSumII(int[] nums, int target) // works
+        {
+            Dictionary<int, int> dict = new Dictionary<int, int>();
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (dict.ContainsKey(target - nums[i]))
+                    return new[] {dict[target - nums[i]], i};
+                if (!dict.ContainsKey(nums[i])) dict.Add(nums[i], i);
+            }
+            return new int[] {};
+        }
+
+        private List<char> intersect(IList<char> tmp, string word)
+        {
+            List<char> ret = new List<char>();
+            foreach (var c in word.Where(c => tmp.Contains(c)))
+            {
+                ret.Add(c);
+                tmp.Remove(c);
+            }
+
+            return ret;
+        }
+        public IList<string> CommonCharsII(string[] words) // works
+        {
+            List<char> tmp = words[0].ToList();
+            tmp = words.Aggregate(tmp, (current, word) => intersect(current, word));
+
+            return tmp.Select(t => t.ToString()).ToList();
+        }
+        
+        public int TriangleNumber(int[] nums) // works
+        {
+            Array.Sort(nums);
+            int count = 0;
+        
+            for (int i = nums.Length - 1; i > 1; i--)
+            {
+                int left = 0;
+                int right = i - 1;
+                
+                while (left < right)
+                {
+                    if (nums[left] + nums[right] > nums[i])
+                    {
+                        count += right - left;
+                        right--;
+                    }
+                    else left++;
+                }
+            }
+            
+            return count;
+        }
+        
+        public IList<IList<int>> ThreeSum(int[] nums) // works
+        {
+            Array.Sort(nums);
+            HashSet<(int, int, int)> tmp = new HashSet<(int, int, int)>();
+
+            for (int i = nums.Length - 1; i >= 2; i--)
+            {
+                int left = 0;
+                int right = i - 1;
+                while (left < right)
+                {
+                    if (nums[left] + nums[right] > -nums[i])
+                        right--;
+                    else if (nums[left] + nums[right] < -nums[i])
+                        left++;
+                    else
+                    {
+                        if (!tmp.Contains((nums[left], nums[right], nums[i]))) 
+                            tmp.Add((nums[left], nums[right], nums[i]));
+                        left++;
+                        right--;
+                    }
+                }
+            }
+
+            IList<IList<int>> ret = new List<IList<int>>();
+            foreach ((int p, int r, int c) in tmp)
+            {
+                ret.Add(new List<int>{p, r, c});
+            }
+            return ret;
+        }
+        
+        public IList<IList<int>> FourSum(int[] nums, int target) // works
+        {
+            Array.Sort(nums);
+            HashSet<(int, int, int, int)> tmp = new HashSet<(int, int, int, int)>();
+            for (int i = nums.Length - 1; i >= 3; i--)
+            {
+                for (int j = i - 1; j >= 2; j--)
+                {
+                    int left = 0;
+                    int right = j - 1;
+                    while (left < right)
+                    {
+                        if (nums[i] + nums[j] + nums[left] + nums[right] > target)
+                            right--;
+                        else if (nums[i] + nums[j] + nums[left] + nums[right] < target)
+                            left++;
+                        else
+                        {
+                            if (!tmp.Contains((nums[left], nums[right], nums[j], nums[i])))
+                                tmp.Add((nums[left], nums[right], nums[j], nums[i]));
+                        }
+                        
+                    }
+                }
+            }
+            
+            IList<IList<int>> ret = new List<IList<int>>();
+            foreach ((int p, int r, int c, int d) in tmp)
+            {
+                ret.Add(new List<int>{p, r, c, d});
+            }
+            return ret;
+        }
+        
+        public bool SearchMatrix(int[][] matrix, int target) // works
+        {
+            foreach (var rw in matrix)
+            {
+                if (target > rw.Last()) continue;
+                int left = 0;
+                int right = rw.Length - 1;
+                int mid = 0;
+                while (left <= right)
+                {
+                    mid = (left + right) / 2;
+                    if (rw[mid] < target)
+                        left = mid + 1;
+                    if (rw[mid] > target)
+                        right = mid - 1;
+                    if (rw[mid] == target)
+                        break;
+                }
+
+                if (rw[mid] == target) return true;
+            }
+
+            return false;
+        }
+        
+        public int RemovePalindromeSub(string s) // works
+        {
+            string r = new string(s.Reverse().ToArray());
+            return s == r ? 1 : 2;
+        }
+
+        public bool IsAnagram(string s, string t) // works
+        {
+            Dictionary<char, int> dict = new Dictionary<char, int>();
+            foreach (var c in s)
+            {
+                if (!dict.ContainsKey(c))
+                    dict.Add(c, 0);
+                dict[c]++;
+            }
+
+            foreach (var c in t)
+            {
+                if (dict.ContainsKey(c))
+                {
+                    dict[c]--;
+                    if (dict[c] == 0) dict.Remove(c);
+                }
+                else return false;
+            }
+
+            return dict.Count == 0;
+        }
+        
+        private void reverse(int[] nums, int start) {
+            int i = start, j = nums.Length - 1;
+            while (i < j) {
+                (nums[i], nums[j]) = (nums[j], nums[i]);
+                i++;
+                j--;
+            }
+        }
+        public void NextPermutation(int[] nums) // works
+        {
+            int i = nums.Length - 2;
+            while (i >= 0 && nums[i + 1] <= nums[i]) {
+                i--;
+            }
+            if (i >= 0) {
+                int j = nums.Length - 1;
+                while (nums[j] <= nums[i]) {
+                    j--;
+                }
+                (nums[i], nums[j]) = (nums[j], nums[i]);
+            }
+            reverse(nums, i + 1);
+        }
+        
+        public IList<IList<int>> Permute(int[] nums) // works
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+
+            void rec(HashSet<int> con)
+            {
+                if (con.Count == nums.Length)
+                    ret.Add(new List<int>(con));
+                else
+                    foreach (var v in nums)
+                    {
+                        if (con.Contains(v)) continue;
+                        rec(new HashSet<int>(con){v});
+                    }
+            }
+
+            rec(new HashSet<int>());
+            
+            return ret;
+        }
+        
+        public void NextPermutationII(int[] nums) 
+        {
+            
+        }
+        
+        public IList<IList<int>> Combine(int n, int k) // works
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+
+            void rec(HashSet<int> con)
+            {
+                if (con.Count == k)
+                    ret.Add(new List<int>(con));
+                else
+                {
+                    int x = 0;
+                    if (con.Count > 0) x = con.Last();
+                    for (int i = x; i <= n; i++)
+                    {
+                        if (con.Contains(i)) continue;
+                        rec(new HashSet<int>(con) {i});
+                    }
+                }
+            }
+
+            rec(new HashSet<int>());
+            
+            return ret;
+        }
+
+        public string GetPermutation(int n, int k) // TLE
+        {
+            IList<IList<int>> ret = new List<IList<int>>();
+            int t = k;
+            void rec(HashSet<int> con)
+            {
+                if (con.Count == n)
+                {
+                    ret.Add(new List<int>(con));
+                    t--;
+                }
+                else if (t > 0)
+                    for (int i = 1; i <= n; i++)
+                    {
+                        if (con.Contains(i)) continue;
+                        rec(new HashSet<int>(con){i});
+                    }
+            }
+
+            rec(new HashSet<int>());
+            
+            return string.Join("", ret[k - 1]);
+        }
+
+        public int LengthOfLongestSubstring(string s) // works
+        {
+            Dictionary<char, int> v = new Dictionary<char, int>();
+            int max = 0;
+            int currMax = 0;
+            for (int i = 0; i < s.Length; i++) {
+                if (v.ContainsKey(s[i])) {
+                    currMax = 0;
+                    i = v[s[i]];
+                    v.Clear();
+                }
+                else {
+                    v.Add(s[i], i);
+                    currMax++;
+                }
+                max = Math.Max(max, currMax);
+            }
+        
             return max;
         }
+        
+        public string FrequencySortII(string s) // works
+        {
+            Dictionary<char, int> freq = new Dictionary<char, int>();
+            foreach (var c in s)
+            {
+                if (!freq.ContainsKey(c))
+                    freq.Add(c, 0);
+                freq[c]++;
+            }
+
+            Dictionary<char, int> ret = freq.OrderByDescending(x => x.Value).ToDictionary<KeyValuePair<char, int>, char, int>(kv => kv.Key, kv => kv.Key);
+            string retStr = "";
+            foreach (var kv in ret)
+            {
+                for (int i = 0; i < freq[kv.Key]; i++)
+                    retStr += kv.Key;
+            }
+            
+            return retStr;
+        }
+        
+        public bool CanConstruct(string ransomNote, string magazine) {
+            Dictionary<char, int> mag = new Dictionary<char, int>();
+            foreach( var m in magazine) {
+                if (!mag.ContainsKey(m))
+                    mag.Add(m, 0);
+                mag[m]++;
+            }
+        
+            foreach ( var r in ransomNote) {
+                if (!mag.ContainsKey(r))
+                    return false;
+            
+                mag[r]--;
+                if (mag[r] < 0)
+                    mag.Remove(r);
+            }
+        
+            return true;
+        }
+
     }
+    public class RandomizedSet // works
+    {
+        private HashSet<int> x;
+        private Random rnd;
+        public RandomizedSet() {
+            x = new HashSet<int>();
+            rnd = new Random();
+        }
+    
+        public bool Insert(int val) {
+            if (x.Contains(val)) return false;
+            x.Add(val);
+            return true;
+        }
+    
+        public bool Remove(int val) {
+            if (!x.Contains(val)) return false;
+            x.Remove(val);
+            return true;
+        }
+    
+        public int GetRandom() {
+            int i = rnd.Next() % x.Count;
+            return x.ElementAt(i);
+        }
+    }
+    public class RandomizedCollection // wrong answer
+    {
+        private Dictionary<int, int> x;
+        private Random rnd;
+        public RandomizedCollection()
+        {
+            x = new Dictionary<int, int>();
+            rnd = new Random();
+        }
+    
+        public bool Insert(int val) {
+            bool ret = !x.ContainsKey(val);
+            if (ret) x.Add(val, 0);
+            x[val]++;
+            return ret;
+        }
+    
+        public bool Remove(int val) {
+            bool ret = x.ContainsKey(val);
+            if (ret) {
+                x[val]--;
+                if (x[val] == 0) x.Remove(val);
+            }
+            return ret;
+        }
+    
+        public int GetRandom() {
+            int i = rnd.Next(x.Count);
+            return x.ElementAt(i).Key;
+        }
+    }
+    
 }

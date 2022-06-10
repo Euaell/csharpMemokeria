@@ -32,6 +32,10 @@ namespace memokeria
             Solution.PrintColl(Solution.FindPeakGrid(arr6));
             int[][] arr7 = {new[] {1993, 1999}, new[] {2000, 2010}};
             Console.WriteLine($"answer : {a.MaximumPopulation(arr7)}");
+            
+            
+            
+            
         }
     }
 }

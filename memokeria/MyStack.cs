@@ -28,4 +28,28 @@ namespace memokeria
         // }
 
     }
+    
+    public class MyHashMap {
+        private Dictionary<int, int> hashMap;
+        public MyHashMap() {
+            hashMap = new Dictionary<int, int> ();
+        }
+    
+        public void Put(int key, int value) {
+            if (hashMap.ContainsKey(key))
+                hashMap[key] = value;
+            hashMap.Add(key, value);
+        }
+    
+        public int Get(int key) {
+            if (hashMap.ContainsKey(key))
+                return hashMap[key];
+            return -1;
+        }
+    
+        public void Remove(int key) {
+            if (hashMap.ContainsKey(key))
+                hashMap.Remove(key);
+        }
+    }
 }

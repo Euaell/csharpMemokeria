@@ -218,7 +218,7 @@ namespace memokeria
             return head;
         }
         
-        public ListNode SwapPairs(ListNode head)
+        public ListNode SwapPairs(ListNode head) // works
         {
             if (head == null) return null;
             ListNode nxt = head.next;
