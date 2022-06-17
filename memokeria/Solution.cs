@@ -1,10 +1,6 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
-using System.Diagnostics;
 using System.Linq;
-using System.Xml.Xsl;
 
 namespace memokeria
 {
@@ -329,8 +325,7 @@ namespace memokeria
             foreach (var va in nums)
             {
                 curSum += va;
-                if (curSum > sum)
-                    sum = curSum;
+                sum = Math.Max(curSum, sum);
                 if (curSum < 0)
                     curSum = 0;
             }
@@ -2628,32 +2623,6 @@ namespace memokeria
             return ret;
         }
 
-        public char FindTheDifference(string s, string t) // doesn't work
-        {
-            HashSet<char> x = s.ToHashSet();
-            foreach(var c in t){
-                if (!x.Contains(c))
-                    return c;
-                x.Remove(c);
-            }
-
-            return '\0';
-        }
-        
-        public int SingleNumber(int[] nums) 
-        {
-            Array.Sort(nums);
-            int ret = nums[0];
-            for (int i = 0; i < nums.Length - 1; i++)
-            {
-                if (nums[i] == nums[i + 1]) continue;
-                ret = nums[i];
-                break;
-            }
-
-            return ret;
-        }
-
         private (int, int)[] direction = {(1, 0), (0, 1), (-1, 0), (0, -1)};
         public int[][] FloodFill(int[][] image, int sr, int sc, int newColor) // works
         {
@@ -3711,6 +3680,321 @@ namespace memokeria
             return true;
         }
 
+        public string SimplifyPath(string path) // works
+        {
+            Stack<string> x = new Stack<string>();
+        
+            string tmp = "";
+            foreach(var v in path) {
+                if (v == '/')
+                {
+                    if (tmp == "") continue;
+                
+                    if (tmp == "..") {
+                        if (x.Count > 0) x.Pop();
+                    }
+                    else if (tmp != ".")
+                        x.Push(tmp);
+                    tmp = "";
+                }
+                else
+                    tmp += v;
+            }
+
+            if (tmp != ""){
+                if (tmp == ".."){
+                    if (x.Count > 0) x.Pop();
+                }
+                else if (tmp != ".")
+                    x.Push(tmp);
+            }
+
+            string ret = "";
+            while (x.Count > 0)
+                ret = "/" + x.Pop() + ret;
+
+            return ret == "" ? "/" : ret;
+        }
+        
+        public bool IsSymmetric(TreeNode root) // works
+        {
+        
+            bool rec (TreeNode left, TreeNode right)
+            {
+                if (left == null && right != null)
+                    return false;
+                if (left != null && right == null)
+                    return false;
+                if (left == null && right == null)
+                    return true;
+                if (left.val != right.val)
+                    return false;
+                return rec(left.left, right.right) && rec(left.right, right.left);
+            }
+        
+            return rec(root.left, root.right);
+        }
+        
+        public TreeNode InvertTree(TreeNode root) // works
+        {
+            if(root == null) return root;
+            
+            TreeNode temp = root.left;
+            root.left = InvertTree(root.right);
+            root.right = InvertTree(temp);
+            
+            return root;
+        }
+        
+        public int FindTargetSumWaysII(int[] nums, int target) {
+            Dictionary<(int, int), int> dict = new Dictionary<(int, int), int>();
+        
+            int rec(int index, int sum) {
+                if (index == nums.Length)
+                    return sum == target ? 1 : 0;
+                if (!dict.ContainsKey((index, sum)))
+                    dict.Add((index, sum), rec(index + 1, sum + nums[index]) + rec(index + 1, sum - nums[index]));
+                return dict[(index, sum)];   
+            }
+        
+            return rec(0, 0);
+        }
+        
+        public int FindTargetSumWays(int[] nums, int target) // must
+        {
+            int sum = nums.Sum(Math.Abs);
+            
+            if(Math.Abs(target) > sum || (target + sum) % 2 != 0)
+                return 0;
+            int val = (target + sum) / 2;
+            
+            int[] dp = new int[val+1];
+            dp[0] = 1;
+            
+            foreach(int n in nums)
+            {
+                for(int i=val;i>=n;i--)
+                    dp[i] += dp[i-n];
+            }
+            
+            return dp[val];
+        }
+        
+        public string GetDirections(TreeNode root, int p, int q) // TLE
+        {
+            Dictionary<int, List<TreeNode>> adjList = new Dictionary<int, List<TreeNode>>();
+        
+            void preOrder(TreeNode node, TreeNode parent) {
+                if (node == null) return;
+            
+                adjList.Add(node.val, new List<TreeNode>(){parent, node.left, node.right});
+                preOrder(node.left, node);
+                preOrder(node.right, node);
+            }
+            preOrder(root, null);
+        
+            // dfs
+            string ret = null;
+            HashSet<int> visited = new HashSet<int>();
+        
+            void rec(TreeNode node, string path) {
+                if (node == null) return;
+            
+                if (visited.Contains(node.val)) return;
+                visited.Add(node.val);
+                if (node.val == q){
+                    ret = path;
+                    return;
+                }
+            
+                rec(adjList[node.val][0], path + "U");
+                rec(adjList[node.val][1], path + "L");
+                rec(adjList[node.val][2], path + "R");
+            }
+        
+            rec(new TreeNode(p), "");
+        
+            return ret;
+        }
+        
+        private int expandAroundCenter(String s, int left, int right) {
+            int L = left;
+            int R = right;
+        
+            while (L >= 0 && R < s.Length && s[L] == s[R]){
+                L--;
+                R++;
+            }
+        
+            return R - L - 1;
+        }
+        public string LongestPalindrome(string s) // works
+        {
+            if (string.IsNullOrEmpty(s)) return "";
+        
+            int start = 0;
+            int end = 0;
+        
+            for (int i = 0; i < s.Length; i++) {
+                int l1 = expandAroundCenter(s, i, i);
+                int l2 = expandAroundCenter(s, i, i + 1);
+                int len = Math.Max(l1, l2);
+            
+                if (len > end - start) {
+                    start = i - (len - 1) / 2;
+                    end = i + len / 2;
+                }
+            }
+        
+            return s.Substring(start, end - start + 1);
+        }
+        
+        public int MajorityElement(int[] nums) // works
+        {
+            Dictionary<int, int> dict = new Dictionary<int, int>();
+            foreach (var v in nums) {
+                if (!dict.ContainsKey(v))
+                    dict.Add(v, 0);
+                dict[v]++;
+            }
+            
+            return dict.First(x => x.Value > nums.Length / 2).Key;
+        }
+        
+        public IList<int> MajorityElementII(int[] nums) // works
+        {
+            IList<int> ret = new List<int>();
+        
+            int m1 = 0;
+            int m2 = 0;
+            int c1 = 0;
+            int c2 = 0;
+        
+            foreach (var v in nums) {
+                if (v == m1)
+                    c1++;
+                else if (v == m2)
+                    c2++;
+                else if (c1 == 0) {
+                    m1 = v;
+                    c1 = 1;
+                }
+                else if (c2 == 0) {
+                    m2 = v;
+                    c2 = 1;
+                }
+                else {
+                    c1--;
+                    c2--;
+                }
+            }
+        
+            c1 = 0;
+            c2 = 0;
+            foreach (var v in nums) {
+                if (v == m1)
+                    c1++;
+                else if (v == m2)
+                    c2++;
+            }
+        
+            if (c1 > nums.Length / 3)
+                ret.Add(m1);
+            if (c2 > nums.Length / 3)
+                ret.Add(m2);
+        
+            return ret;
+        }
+        
+        public IList<int> MajorityElementIII(int[] nums) // works
+        {
+            Dictionary<int, int> dict = new Dictionary<int, int>();
+            foreach (var v in nums) {
+                if (!dict.ContainsKey(v))
+                    dict.Add(v, 0);
+                dict[v]++;
+            }
+
+            return (from v in dict where v.Value > nums.Length / 3 select v.Key).ToList();
+        }
+
+        public int SingleNumber(int[] nums) // works
+        {
+            // bit manipulation (XOR)
+            // a ^ a = 0
+            int ret = 0;
+            foreach (var v in nums) {
+                ret ^= v;
+            }
+            return ret;
+        }
+        
+        public int[] SingleNumberIII(int[] nums) // works ??
+        {
+            int[] ret = new int[2];
+            int xor = 0;
+            foreach (var v in nums) {
+                xor ^= v;
+            }
+            
+            int mask = xor & ~(xor - 1);
+            foreach (var v in nums) {
+                if ((v & mask) == 0) {
+                    ret[0] ^= v;
+                } else {
+                    ret[1] ^= v;
+                }
+            }
+            return ret;
+        }
+        
+        public int SingleNumberII(int[] nums) // works ??
+        {
+            int[] bitsCount = new int[32];
+
+            foreach (var num in nums)
+                for (int i = 0; i < 32; i++)
+                    if((num & (1 << i)) != 0)
+                        bitsCount[i]++;
+
+            int res = 0;
+            for (int i = 0; i < 32; i++)
+                if (bitsCount[i] % 3 == 1)
+                    res |= 1 << i;
+
+            return res;
+        }
+        
+        public char FindTheDifference(string s, string t) // works
+        {
+            Dictionary<char, int> vis = new Dictionary<char, int>();
+            foreach (var v in s)
+            {
+                if (!vis.ContainsKey(v))
+                    vis.Add(v, 0);
+                vis[v]++;
+            }
+
+            char ret = ' ';
+            foreach (var v in t)
+            {
+                if (!vis.ContainsKey(v))
+                {
+                    ret = v;
+                    continue;
+                }
+
+                vis[v]--;
+                if (vis[v] == 0)
+                    vis.Remove(v);
+            }
+            
+            return ret;
+        }
+        
+        
+        
+        
     }
     public class RandomizedSet // works
     {
@@ -3769,5 +4053,7 @@ namespace memokeria
             return x.ElementAt(i).Key;
         }
     }
+    
+    
     
 }
